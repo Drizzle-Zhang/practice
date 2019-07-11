@@ -410,7 +410,6 @@ if __name__ == '__main__':
         os.path.join(path, 'Error plot 1-499.png')
     )
 
-
     # eigenface algorithm
     # split data set
     info_trainset = df_info.loc[df_info['group'] == 'train', :]
@@ -419,6 +418,13 @@ if __name__ == '__main__':
     df_testset = df_images.loc[info_testset['filename'], :]
 
     obj_pca_lda = EigenFaceAndFisher(df_trainset, info_trainset)
+    pca_vec_project, red_pca_train = obj_pca_lda.get_eigen_projection(160)
+    lda_vec_project, red_lda_train = obj_pca_lda.get_fisher_projection(160, 39)
+    pca_lda_labels = obj_pca_lda.predict_label(
+        df_testset, pca_vec_project, lda_vec_project
+    )
+    acc = accuracy_score(info_testset['person_id'], pca_lda_labels)
+    print("Accuracy of PCA+LDA: ", acc)
 
     time_end = time()
     print(time_end - time_start)
