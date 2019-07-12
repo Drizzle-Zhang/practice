@@ -197,23 +197,23 @@ class EigenFaceAndFisher:
     def get_eigen_projection(self, k_pca):
         # eigenfacer projection matrix
         vec_project = self.u_mat[:, self.sort_lambda[:k_pca]]
-        pca_vec_project = np.real(vec_project)
+        vec_project = np.real(vec_project)
 
         # PCA reduction
-        red_pca_train = np.dot(self.phi_train, vec_project)
+        red_pca = np.dot(self.phi_train, vec_project)
 
-        return pca_vec_project, red_pca_train
+        return vec_project, red_pca
 
     def get_fisher_projection(self, k_pca, k_lda):
         # fisher projection matrix
-        pca_vec_project, red_pca_train = self.get_eigen_projection(k_pca)
+        vec_project, red_pca = self.get_eigen_projection(k_pca)
         # centers
-        mu_total = np.mean(red_pca_train)
-        red_pca_train = pd.DataFrame(red_pca_train, index=self.df_train.index)
+        mu_total = np.mean(red_pca)
+        red_pca = pd.DataFrame(red_pca, index=self.df_train.index)
         mu_persons = pd.DataFrame()
         for person in self.persons:
             vec_person = np.mean(
-                red_pca_train.loc[self.info_train['person_id'] == person, :])
+                red_pca.loc[self.info_train['person_id'] == person, :])
             vec_person.name = person
             mu_persons = mu_persons.append(vec_person)
 
@@ -238,12 +238,12 @@ class EigenFaceAndFisher:
 
         # LDA reduction
         lda_project = eig_vec_lda[:, sort_eigval_lda[:k_lda]]
-        lda_vec_project = np.real(lda_project)
+        lda_project = np.real(lda_project)
 
         # PCA reduction
-        red_lda_train = np.dot(red_pca_train, lda_vec_project)
+        red_lda = np.dot(red_pca_train, lda_project)
 
-        return lda_vec_project, red_lda_train
+        return lda_project, red_lda
 
     def predict_label(self, df_test, pca_vec_project, lda_vec_project):
         # centralization
