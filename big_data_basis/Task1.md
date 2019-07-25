@@ -24,5 +24,11 @@ shell小练习1：
  4. [关闭windows的防火墙！如果不关闭防火墙的话，可能和虚拟机直接无法ping通！](https://www.linuxidc.com/Linux/2017-11/148427.htm)
  5. 大数据软件 ：[链接](https://pan.baidu.com/s/17fEq3IPVoeE29cWCrSpO8Q) 提取码：finf
 
-# 1. 创建三台虚拟机
-先安装virtualbox
+## 1. 创建三台虚拟机
+先安装virtualbox(Ubuntu18.04)
+```Bash
+sudo apt-get update
+sudo apt-get upgrade
+sudo apt-get install virtualbox
+```
+按照[题目中链接](https://mp.weixin.qq.com/s/WkjX8qz7nYvuX4k9vaCdZQ)配置虚拟机
