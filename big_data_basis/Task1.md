@@ -31,4 +31,41 @@ sudo apt-get update
 sudo apt-get upgrade
 sudo apt-get install virtualbox
 ```
-按照[题目中链接](https://mp.weixin.qq.com/s/WkjX8qz7nYvuX4k9vaCdZQ)配置虚拟机
+按照[题目中链接](https://mp.weixin.qq.com/s/WkjX8qz7nYvuX4k9vaCdZQ)配置虚拟机,三台虚拟机分别给1GB内存，10GB硬盘<br>
+注：<br>
+1）网卡名称的选项和win系统不太一样，先搁置看后面有什么影响<br>
+2）启动虚拟机时遇到不能打开虚拟机的问题，在群里询问之后发现是BIOS里面的Intel VT选项没有Enable，修改BIOS设置之后问题解决<br>
+3）因为电脑连的无线校园网，所以IP是动态的，在安装步骤里先不设置IPv4地址<br>
+
+## 2. 在本机连接虚拟机
+先对网络进行设置，打开网卡文件<br>
+```Bash
+sudo vi /etc/sysconfig/network-scripts/ifcfg-enp0s3
+```
+在文件后面加上以下网络信息：
+```Bash
+ONBOOT=yes 
+BOOTPROTO=static 
+IPADDR=202.120.234.143
+NETMASK=255.255.255.0 
+GATEWAY=10.157.56.1
+DNS1=192.168.1.1
+DNS2=8.8.8.8
+```
+然后重启网络服务,并开启sshd服务
+```Bash
+sudo systemctl restart network
+sudo service sshd start
+```
+尝试ping本机IP
+```Bash
+ping 202.120.234.142
+```
+结果无法ping通，设置网络无法成功`哭晕`跳过直接进入第三步吧<br>
+
+因为虚拟环境搭建失败，以下步骤在现成的CentOS上进行：
+
+## 3. CentOS7配置阿里云yum源和EPEL源
+
+
+
