@@ -106,6 +106,25 @@ start-dfs.sh
 1922 Jps
 1653 SecondaryNameNode
 1350 NameNode
-
+[zy@node8 tools]$ jps
+183451 DataNode
+183564 Jps
+[zy@node9 tools]$ jps
+44029 DataNode
+44142 Jps
+```
+小插曲：jps之后在node8和node9上没有发现datanode
+```Bash
+# 查看ｌｏｇ文件
+less -S hadoop-2.7.3/logs/hadoop-zy-datanode-node9.log
+发现其中的报错
+###
+2019-07-28 10:32:46,875 FATAL org.apache.hadoop.hdfs.server.datanode.DataNode: Exception in secureMain
+java.net.BindException: Problem binding to [0.0.0.0:50010] java.net.BindException: Address already in use; For more details see:  http://wiki.apache.org/hadoop/BindException
+###
+# 提示地址被占用，所以就去寻找是什么占用的
+[root@node9 tools]# netstat -nltp | grep 50010
+tcp        0      0 0.0.0.0:50010           0.0.0.0:*               LISTEN      2115/java           
+[root@node9 tools]# kill -9 2115
 ```
 
