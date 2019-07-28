@@ -58,4 +58,35 @@ vi core-site.xml
 </property>
 </configuration>
 ###
+# mapreduce相关配置
+mv mapred-site.xml.template mapred-site.xml
+vi mapred-site.xml
+###
+<configuration>
+<property>
+        <name>mapreduce.framework.name</name>
+        <value>yarn</value>
+</property>
+</configuration>
+###
+# 配置yarn
+vi yarn-site.xml
+###
+<configuration>
+<property>
+        <name>yarn.resourcemanager.hostname</name>
+        <value>node7</value>
+</property>
+<property>
+        <name>yarn.resourcemanager.aux-services</name>
+        <value>mapreduce_shuffle</value>
+</property>
+</configuration>
+###
+# 配置slaves文件
+vi slaves
+###
+node8
+node9
+###
 ```
