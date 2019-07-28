@@ -27,5 +27,35 @@ mkdir data_hadoop
 修改配置文件
 ```Bash
 cd hadoop-2.7.3/etc/hadoop/
+# 配置hdfs地址
 vi core-site.xml
+###
+<configuration>
+<property>
+        <name>fs.default.name</name>
+        <value>hdfs://node7:9000</value>
+</property>
+</configuration>
+###
+# 配置hdfs继承
+###
+<configuration>
+<property>
+        <name>dfs.name.dir</name> 
+        <value>/local/zy/tools/data_hadoop/namenode</value>
+</property>
+<property>
+        <name>dfs.data.dir</name>
+        <value>/local/zy/tools/data_hadoop/datanode</value>
+</property>
+<property>
+        <name>dfs.tmp.dir</name>
+        <value>/local/zy/tools/data_hadoop/tmp</value>
+</property>
+<property>
+        <name>dfs.replication</name>
+        <value>3</value>
+</property>
+</configuration>
+###
 ```
