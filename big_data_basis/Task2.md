@@ -86,6 +86,7 @@ vi yarn-site.xml
 # 配置slaves文件
 vi slaves
 ###
+node7
 node8
 node9
 ###
