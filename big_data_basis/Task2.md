@@ -128,12 +128,12 @@ tcp        0      0 0.0.0.0:50010           0.0.0.0:*               LISTEN      
 [root@node9 tools]# kill -9 2115
 ```
 登录网页10.152.255.52:50070即可看到搭建的hadoop集群的网页界面<br>
-测试ｈｄｆｓ的上传功能，先创建文件hello.txt，然后上传
+测试hdfs的上传功能，先创建文件hello.txt，然后上传
 ```Bash
 hdfs dfs -put hello.txt /hello.txt
 ```
 然后就可以在网页的Utilities-Browse Directory里看到上传的文件了<br>
-接下来启动ｙａｒｎ集群，并用ｊｐｓ在三个节点上检验，均没有问题
+接下来启动yarn集群，并用jps在三个节点上检验，均没有问题
 ```Bash
 [zy@node7 ~]$ start-yarn.sh 
 starting yarn daemons
