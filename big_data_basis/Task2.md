@@ -127,4 +127,36 @@ java.net.BindException: Problem binding to [0.0.0.0:50010] java.net.BindExceptio
 tcp        0      0 0.0.0.0:50010           0.0.0.0:*               LISTEN      2115/java           
 [root@node9 tools]# kill -9 2115
 ```
+登录网页10.152.255.52:50070即可看到搭建的hadoop集群的网页界面<br>
+测试ｈｄｆｓ的上传功能，先创建文件hello.txt，然后上传
+```Bash
+hdfs dfs -put hello.txt /hello.txt
+```
+然后就可以在网页的Utilities-Browse Directory里看到上传的文件了<br>
+接下来启动ｙａｒｎ集群，并用ｊｐｓ在三个节点上检验，均没有问题
+```Bash
+[zy@node7 ~]$ start-yarn.sh 
+starting yarn daemons
+resourcemanager running as process 20722. Stop it first.
+node9: starting nodemanager, logging to /local/zy/tools/hadoop-2.7.3/logs/yarn-zy-nodemanager-node9.out
+node8: starting nodemanager, logging to /local/zy/tools/hadoop-2.7.3/logs/yarn-zy-nodemanager-node8.out
+[zy@node7 ~]$ jps
+19408 SecondaryNameNode
+19121 NameNode
+20722 ResourceManager
+21022 Jps
+[zy@node8 ~]$ jps
+183451 DataNode
+184312 Jps
+184153 NodeManager
+[zy@node9 ~]$ jps
+44029 DataNode
+45373 Jps
+45214 NodeManager
+```
+
+
+
+
+
 
