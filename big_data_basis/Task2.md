@@ -54,7 +54,7 @@ vi core-site.xml
 </property>
 <property>
         <name>dfs.replication</name>
-        <value>3</value>
+        <value>2</value>
 </property>
 </configuration>
 ###
