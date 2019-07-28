@@ -90,3 +90,8 @@ node8
 node9
 ###
 ```
+将hadoop和.bashrc文件夹复制到其他两个节点
+```Bash
+scp -r hadoop-2.7.3 zy@xxxx:/local/zy/tools
+```
+
