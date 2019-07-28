@@ -94,4 +94,17 @@ node9
 ```Bash
 scp -r hadoop-2.7.3 zy@xxxx:/local/zy/tools
 ```
+启动hdfs集群
+```Bash
+# 格式化namenode，在node7上执行
+hdfs namenode -format
+# 启动hdfs集群
+start-dfs.sh
+# jps验证
+[zy@node7 tools]$ jps
+1922 Jps
+1653 SecondaryNameNode
+1350 NameNode
+
+```
 
