@@ -367,8 +367,77 @@ RPC，即Remote Procedure Call，远程过程调用协议。<br>
 
 
 ## 6. 学会写WordCount（Java/Python-Hadoop Streaming），理解分布式/单机运行模式的区别
-```Java
+编写map函数 wordcount_mapper.py
+```Python
+#!/usr/bin/env python   
+#This mapper code will input a line of text and output <word, 1>
+
+import sys            
+
+for line in sys.stdin:  
+    line = line.strip()  
+    keys = line.split() 
+    for key in keys:    
+        value = 1        
+        #the {} is replaced by 0th,1st items in format list
+        print('{0}\t{1}'.format(key, value) ) 
+                       
+```
+reduce函数 word count_reducer.py
+```Python
+#!/usr/bin/env python
+
+#This reducer code will input a line of text and 
+#    output <word, total-count>
+import sys
+
+last_key      = None              
+running_total = 0
+
+# 使用循环读取输入并计数
+for input_line in sys.stdin:
+    input_line = input_line.strip()
+    this_key, value = input_line.split("\t", 1) 
+    value = int(value)           
+ 
+    if last_key == this_key:     
+        running_total += value   # add value to running total
+
+    else:
+        if last_key:          
+            print( "{0}\t{1}".format(last_key, running_total) )
+                               
+        running_total = value    #reset values
+        last_key = this_key
+
+if last_key == this_key:
+    print( "{0}\t{1}".format(last_key, running_total)) 
 
 ```
+streaming 使用绝对地址，output 不能是已经存在的目录 mapper 和reducer使用绝对地址，然后运行命令，
+```Bash
+hadoop jar /Download/hadoop-streaming-2.7.3.jar 
+-input /hello \
+-output /output 
+-mapper /usr/local/yarn/hadoop-2.7.3/wordcount/wordcount_mapper.py 
+-reducer /usr/local/yarn/hadoop-2.7.3/wordcount/wordcount_reducer.py
+```
+然后查看/output就可以看到结果。<br><br>
+
+参考资料：<br>
+[使用Hadoop Streaming运行Python版Wordcount](https://www.jianshu.com/p/e3fba578d1a8)<br><br>
+
+## 7. 理解MapReduce的执行过程
+假设用户编写了一个 MapReduce 程序，并将其打包成 xxx.jar 文件，然后使用 以下命令提交作业：
+```Bash
+$HADOOP_HOME/bin/hadoop jar xxx.jar \
+-D mapred.job.name="xxx" \
+-D mapred.map.tasks=3 \
+-D mapred.reduce.tasks=2 \
+-D input=/test/input \
+-D output=/test/output
+```
+则该作业的运行过程如图所示：
+
 
 
