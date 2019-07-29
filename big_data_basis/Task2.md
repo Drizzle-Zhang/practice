@@ -428,7 +428,7 @@ hadoop jar /Download/hadoop-streaming-2.7.3.jar
 [使用Hadoop Streaming运行Python版Wordcount](https://www.jianshu.com/p/e3fba578d1a8)<br><br>
 
 ## 7. 理解MapReduce的执行过程
-假设用户编写了一个 MapReduce 程序，并将其打包成 xxx.jar 文件，然后使用 以下命令提交作业：
+假设用户编写了一个 MapReduce 程序，并将其打包成 xxx.jar 文件，然后使用 以下命令提交作业：<br>
 ```Bash
 $HADOOP_HOME/bin/hadoop jar xxx.jar \
 -D mapred.job.name="xxx" \
@@ -437,7 +437,27 @@ $HADOOP_HOME/bin/hadoop jar xxx.jar \
 -D input=/test/input \
 -D output=/test/output
 ```
-则该作业的运行过程如图所示：
+则该作业的运行过程如图所示：<br>
+![https://github.com/Drizzle-Zhang/practice/blob/master/big_data_basis/MapReduce_execute.jpg]()<br>
+这个过程分为以下 5 个步骤：<br>
+步骤 1：作业提交与初始化。 用户提交作业后， 首先由 JobClient 实例将作业相关信息， 比如将程序 jar 包、作业配置文件、 分片元信息文件等上传到分布式文件系统（ 一般为HDFS）上，其中，分片元信息文件记录了每个输入分片的逻辑位置信息。 然后 JobClient通过 RPC 通知 JobTracker。 JobTracker 收到新作业提交请求后， 由 作业调度模块对作业进行初始化：为作业创建一个 JobInProgress 对象以跟踪作业运行状况， 而 JobInProgress 则会为每个Task 创建一个 TaskInProgress 对象以跟踪每个任务的运行状态， TaskInProgress 可能需要管理多个“ Task 运行尝试”（ 称为“ Task Attempt”）。<br>
+步骤 2：任务调度与监控。 前面提到，任务调度和监控的功能均由 JobTracker 完成。TaskTracker 周期性地通过 Heartbeat 向 JobTracker 汇报本节点的资源使用 情况， 一旦出 现空闲资源， JobTracker 会按照一定的策略选择一个合适的任务使用该空闲资源， 这由任务调度器完成。 任务调度器是一个可插拔的独立模块， 且为双层架构， 即首先选择作业， 然后从该作业中选择任务， 其中，选择任务时需要重点考虑数据本地性。 此外，JobTracker 跟踪作业的整个运行过程，并为作业的成功运行提供全方位的保障。 首先， 当 TaskTracker 或者Task 失败时， 转移计算任务 ； 其次， 当某个 Task 执行进度远落后于同一作业的其他 Task 时，为之启动一个相同 Task， 并选取计算快的 Task 结果作为最终结果。<br>
+步骤 3：任务运行环境准备。 运行环境准备包括 JVM 启动和资源隔 离， 均由TaskTracker 实现。 TaskTracker 为每个 Task 启动一个独立的 JVM 以避免不同 Task 在运行过程中相互影响 ； 同时，TaskTracker 使用了操作系统进程实现资源隔离以防止 Task 滥用资源。 <br>
+步骤 4 ：任务执行。 TaskTracker 为 Task 准备好运行环境后， 便会启动 Task。 在运行过程中， 每个 Task 的最新进度首先由 Task 通过 RPC 汇报给 TaskTracker， 再由 TaskTracker汇报给 JobTracker。 <br>
+步骤 5 作业完成。 待所有 Task 执行完毕后， 整个作业执行成功。<br><br>
+
+
+参考资料：<br>
+[Hadoop 基本架构](https://blog.csdn.net/weixin_33728708/article/details/90662604)<br><br>
+
+## 8. Yarn在Hadoop中的作用
+hadoop1.x是有一些问题的，其中重要的问题是jobTracker的问题，例如单点故障，任务过重，其中除了JobTracker同时还有一个TaskTracker。为了更好的理解yarn的作用，我们就需要跟hadoop1.x比较。<br>
+在hadoop２.x中，我们看到JobTracker的功能被分散到各个进程中包括ResourceManager和NodeManager：比如监控功能，分给了NodeManager，和Application Master。ResourceManager里面又分为了两个组件：调度器及应用程序管理器。也就是说Yarn重构后，JobTracker的功能，被分散到了各个进程中。同时由于这些进程可以被单独部署所以这样就大大减轻了单点故障及压力。同时我们还看到Yarn使用了Container，而hadoop1.x中使用了slot。slot存在的缺点比如只能map或则reduce用。Container则不存在这个问题。这也是Yarn的进步。<br>
+
+参考资料：<br>
+[Hadoop 基本架构](https://blog.csdn.net/weixin_33728708/article/details/90662604)<br><br>
+
+
 
 
 
