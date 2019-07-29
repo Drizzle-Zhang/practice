@@ -156,9 +156,14 @@ node8: starting nodemanager, logging to /local/zy/tools/hadoop-2.7.3/logs/yarn-z
 ```
 登录网页10.152.255.52:8088即可看到yarn的管理界面<br><br>
 对于HDFS的理解，参考https://blog.csdn.net/yinglish_/article/details/75269649<br>
-对于HA/Federation的理解，参考https://blog.csdn.net/yinglish_/article/details/76785210
+对于HA/Federation的理解，参考https://blog.csdn.net/yinglish_/article/details/76785210<br>
 
 ## 2. 阅读Google三大论文，并总结
+Google File System是一个可扩展的分布式文件系统，用于大型的、分布式的、对大量数据进行访问的应用。它运行于廉价的普通硬件上，提供容错功能。<br>
+MapReduce是一种大数据的分布式计算方式，主要思想是将任务分解然后在多台处理能力较弱的计算节点中同时处理，然后将结果合并从而完成大数据处理。<br>
+BigTable是 是建立在 GFS 和 MapReduce 之上的，系统采用Tablets的机制后，可以获得很好的负载均衡。<br>
+参考资料：<br>
+[Google三大理论（论文）](https://blog.csdn.net/w1573007/article/details/52966742)<br><br>
 
 
 ## 3. Hadoop的作用（解决了什么问题）/运行模式/基础组件及架构
