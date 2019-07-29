@@ -438,7 +438,7 @@ $HADOOP_HOME/bin/hadoop jar xxx.jar \
 -D output=/test/output
 ```
 则该作业的运行过程如图所示：<br>
-![https://github.com/Drizzle-Zhang/practice/blob/master/big_data_basis/MapReduce_execute.jpg]()<br>
+![](https://github.com/Drizzle-Zhang/practice/blob/master/big_data_basis/MapReduce_execute.jpg)<br>
 这个过程分为以下 5 个步骤：<br>
 步骤 1：作业提交与初始化。 用户提交作业后， 首先由 JobClient 实例将作业相关信息， 比如将程序 jar 包、作业配置文件、 分片元信息文件等上传到分布式文件系统（ 一般为HDFS）上，其中，分片元信息文件记录了每个输入分片的逻辑位置信息。 然后 JobClient通过 RPC 通知 JobTracker。 JobTracker 收到新作业提交请求后， 由 作业调度模块对作业进行初始化：为作业创建一个 JobInProgress 对象以跟踪作业运行状况， 而 JobInProgress 则会为每个Task 创建一个 TaskInProgress 对象以跟踪每个任务的运行状态， TaskInProgress 可能需要管理多个“ Task 运行尝试”（ 称为“ Task Attempt”）。<br>
 步骤 2：任务调度与监控。 前面提到，任务调度和监控的功能均由 JobTracker 完成。TaskTracker 周期性地通过 Heartbeat 向 JobTracker 汇报本节点的资源使用 情况， 一旦出 现空闲资源， JobTracker 会按照一定的策略选择一个合适的任务使用该空闲资源， 这由任务调度器完成。 任务调度器是一个可插拔的独立模块， 且为双层架构， 即首先选择作业， 然后从该作业中选择任务， 其中，选择任务时需要重点考虑数据本地性。 此外，JobTracker 跟踪作业的整个运行过程，并为作业的成功运行提供全方位的保障。 首先， 当 TaskTracker 或者Task 失败时， 转移计算任务 ； 其次， 当某个 Task 执行进度远落后于同一作业的其他 Task 时，为之启动一个相同 Task， 并选取计算快的 Task 结果作为最终结果。<br>
