@@ -154,9 +154,16 @@ node8: starting nodemanager, logging to /local/zy/tools/hadoop-2.7.3/logs/yarn-z
 45373 Jps
 45214 NodeManager
 ```
-登录网页10.152.255.52:8088即可看到yarn的管理界面<br>
+登录网页10.152.255.52:8088即可看到yarn的管理界面<br><br>
+对于HDFS的理解，参考https://blog.csdn.net/yinglish_/article/details/75269649<br>
+对于HA/Federation的理解，参考https://blog.csdn.net/yinglish_/article/details/76785210
+
+## 2. 阅读Google三大论文，并总结
 
 
-
+## 3. Hadoop的作用（解决了什么问题）/运行模式/基础组件及架构
+Hadoop的作用：Hadoop 是一个开源软件框架，用于存储大量数据，并发处理/查询在具有多个商用硬件（即低成本硬件）节点的集群上的那些数据。
+（参考：https://www.cnblogs.com/gala1021/p/8552850.html）<br><br>
+Hadoop的运行模式：
 
 
