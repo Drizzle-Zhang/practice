@@ -205,11 +205,157 @@ Map Task 执行过程如图所示。 由该图可知，Map Task 先将对应的 
 Reduce Task 执行过程如图所示。该过程分为三个阶段①从远程节点上读取MapTask中间结果（称为“Shuffle 阶段”）；②按照key对key/value对进行排序（称为“ Sort 阶段”）；③依次读取<key, value list>，调用用户自定义的 reduce() 函数处理，并将最终结果存到 HDFS 上（称为“ Reduce 阶段”）。<br>
 ![](https://github.com/Drizzle-Zhang/practice/blob/master/big_data_basis/MapReduce.jpg)<br>
 
+## 4. 学会阅读HDFS源码，并自己阅读一段HDFS的源码(推荐HDFS上传/下载过程)
+关于HDFS的文件上传，主要执行过程如下：<br>
+１）FileSystem初始化，Client拿到NameNodeRpcServer代理对象，建立与NameNode的RPC通信<br>
+２）调用FileSystem的create()方法，由于实现类为DistributedFileSystem,所有是调用该类中的create()方法<br>
+３）DistributedFileSystem持有DFSClient的引用，继续调用DFSClient中的create()方法<br>
+４）DFSOutputStream提供的静态newStreamForCreate()方法中调用NameNodeRpcServer服务端的create()方法并创建DFSOutputStream输出流对象返回<br>
+５）通过hadoop提供的IOUtil工具类将输出流输出到本地<br><br>
 
+下面我们来看下源码：<br><br>
 
+首先初始化文件系统，建立与服务端的RPC通信<br>
+```Java
+HDFSDemo.java
+OutputStream os = fs.create(new Path("/test.log"));
+```
+调用FileSystem的create()方法，由于FileSystem是一个抽象类，这里实际上是调用的该类的子类create()方法<br>
+```Java
+Copy1  //FileSystem.java
+public abstract FSDataOutputStream create(Path f,
+      FsPermission permission,
+      boolean overwrite,
+      int bufferSize,
+      short replication,
+      long blockSize,
+      Progressable progress) throws IOException;
+```
+前面我们已经说过FileSystem.get()返回的是DistributedFileSystem对象，所以这里我们直接进入DistributedFileSystem：<br>
+```Java
+Copy 1   //DistributedFileSystem.java
+@Override
+  public FSDataOutputStream create(final Path f, final FsPermission permission,
+    final EnumSet<CreateFlag> cflags, final int bufferSize,
+    final short replication, final long blockSize, final Progressable progress,
+    final ChecksumOpt checksumOpt) throws IOException {
+    statistics.incrementWriteOps(1);
+    Path absF = fixRelativePart(f);
+    return new FileSystemLinkResolver<FSDataOutputStream>() {
+      @Override
+      public FSDataOutputStream doCall(final Path p)
+          throws IOException, UnresolvedLinkException {
+        final DFSOutputStream dfsos = dfs.create(getPathName(p), permission,
+                cflags, replication, blockSize, progress, bufferSize,
+                checksumOpt);
+        //dfs为DistributedFileSystem所持有的DFSClient对象，这里调用DFSClient中的create()方法
+        return dfs.createWrappedOutputStream(dfsos, statistics);
+      }
+      @Override
+      public FSDataOutputStream next(final FileSystem fs, final Path p)
+          throws IOException {
+        return fs.create(p, permission, cflags, bufferSize,
+            replication, blockSize, progress, checksumOpt);
+      }
+    }.resolve(this, absF);
+  }
+```
+DFSClient的create()返回一个DFSOutputStream对象：<br>
+```Java
+Copy 1  //DFSClient.java
+public DFSOutputStream create(String src, 
+                             FsPermission permission,
+                             EnumSet<CreateFlag> flag, 
+                             boolean createParent,
+                             short replication,
+                             long blockSize,
+                             Progressable progress,
+                             int buffersize,
+                             ChecksumOpt checksumOpt,
+                             InetSocketAddress[] favoredNodes) throws IOException {
+    checkOpen();
+    if (permission == null) {
+      permission = FsPermission.getFileDefault();
+    }
+    FsPermission masked = permission.applyUMask(dfsClientConf.uMask);
+    if(LOG.isDebugEnabled()) {
+      LOG.debug(src + ": masked=" + masked);
+    }
+    //调用DFSOutputStream的静态方法newStreamForCreate，返回输出流
+    final DFSOutputStream result = DFSOutputStream.newStreamForCreate(this,
+        src, masked, flag, createParent, replication, blockSize, progress,
+        buffersize, dfsClientConf.createChecksum(checksumOpt),
+        getFavoredNodesStr(favoredNodes));
+    beginFileLease(result.getFileId(), result);
+    return result;
+  }
+```
+我们继续看下newStreamForCreate()中的业务逻辑：<br>
+```Java
+Copy 1 //DFSOutputStream.java
+ static DFSOutputStream newStreamForCreate(DFSClient dfsClient, String src,
+      FsPermission masked, EnumSet<CreateFlag> flag, boolean createParent,
+      short replication, long blockSize, Progressable progress, int buffersize,
+      DataChecksum checksum, String[] favoredNodes) throws IOException {
+    TraceScope scope =
+        dfsClient.getPathTraceScope("newStreamForCreate", src);
+    try {
+      HdfsFileStatus stat = null;
+      boolean shouldRetry = true;
+      int retryCount = CREATE_RETRY_COUNT;
+      while (shouldRetry) {
+        shouldRetry = false;
+        try {
+          //这里通过dfsClient的NameNode代理对象调用NameNodeRpcServer中实现的create()方法
+          stat = dfsClient.namenode.create(src, masked, dfsClient.clientName,
+              new EnumSetWritable<CreateFlag>(flag), createParent, replication,
+              blockSize, SUPPORTED_CRYPTO_VERSIONS);
+          break;
+        } catch (RemoteException re) {
+          IOException e = re.unwrapRemoteException(
+              AccessControlException.class,
+              DSQuotaExceededException.class,
+              FileAlreadyExistsException.class,
+              FileNotFoundException.class,
+              ParentNotDirectoryException.class,
+              NSQuotaExceededException.class,
+              RetryStartFileException.class,
+              SafeModeException.class,
+              UnresolvedPathException.class,
+              SnapshotAccessControlException.class,
+              UnknownCryptoProtocolVersionException.class);
+          if (e instanceof RetryStartFileException) {
+            if (retryCount > 0) {
+              shouldRetry = true;
+              retryCount--;
+            } else {
+              throw new IOException("Too many retries because of encryption" +
+                  " zone operations", e);
+            }
+          } else {
+            throw e;
+          }
+        }
+      }
+      Preconditions.checkNotNull(stat, "HdfsFileStatus should not be null!");
+     //new输出流对象
+      final DFSOutputStream out = new DFSOutputStream(dfsClient, src, stat,
+          flag, progress, checksum, favoredNodes);
+      out.start();//调用内部类DataStreamer的start()方法，DataStreamer继承Thread，所以说这是一个线程，从NameNode中申请新的block信息；
+　　　　　　　　　　　　　　　　同时前面我们介绍hdfs原理的时候提到的流水线作业（Pipeline）也是在这里实现，有兴趣的同学可以去研究下，这里就不带大家看了
+      return out;
+    } finally {
+      scope.close();
+    }
+  }
+```
+到此，Client拿到了服务端的输出流对象，那么后面就容易了，都是一些简答的文件输出，输入流的操作（hadoop提供的IOUitl。<br><br>
 
+参考资料：<br>
+[Hadoop之HDFS原理及文件上传下载源码分析（上）](https://www.cnblogs.com/qq503665965/p/6696675.html)
+[Hadoop之HDFS原理及文件上传下载源码分析（下）](https://www.cnblogs.com/qq503665965/p/6740992.html)
+```Java
 
-
-
+```
 
 
