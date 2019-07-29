@@ -57,7 +57,7 @@ vi core-site.xml
         <value>2</value>
 </property>
 </configuration>
-###
+### 
 # mapreduce相关配置
 mv mapred-site.xml.template mapred-site.xml
 vi mapred-site.xml
