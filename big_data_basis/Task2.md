@@ -349,11 +349,20 @@ Copy 1 //DFSOutputStream.java
     }
   }
 ```
-到此，Client拿到了服务端的输出流对象，那么后面就容易了，都是一些简答的文件输出，输入流的操作（hadoop提供的IOUitl。<br><br>
+到此，Client拿到了服务端的输出流对象，那么后面就容易了，都是一些简答的文件输出，输入流的操作（hadoop提供的IOUitl)。<br><br>
 
 参考资料：<br>
-[Hadoop之HDFS原理及文件上传下载源码分析（上）](https://www.cnblogs.com/qq503665965/p/6696675.html)
-[Hadoop之HDFS原理及文件上传下载源码分析（下）](https://www.cnblogs.com/qq503665965/p/6740992.html)
+[Hadoop之HDFS原理及文件上传下载源码分析（上）](https://www.cnblogs.com/qq503665965/p/6696675.html)<br>
+[Hadoop之HDFS原理及文件上传下载源码分析（下）](https://www.cnblogs.com/qq503665965/p/6740992.html)<br><br>
+
+## 5. Hadoop中各个组件的通信方式，RPC/Http等
+RPC，即Remote Procedure Call，远程过程调用协议。<br>
+概括的说，RPC采用客户机/服务器模式。请求程序就是一个客户机，而服务提供程序就是一个服务器。首先，客户机调用进程发送一个有进程参数的调用信息到服务进程，然后等待应答信息。在服务器端，进程保持睡眠状态直到调用信息的到达为止。当一个调用信息到达，服务器获得进程参数，计算结果，发送答复信息，然后等待下一个调用信息，最后，客户端调用进程接收答复信息，获得进程结果，然后调用执行继续进行。<br>
+运行时,一次客户端对服务端的RPC调用,其内部操作大致有如下十步：<br>
+![](https://github.com/Drizzle-Zhang/practice/blob/master/big_data_basis/RPC.jpeg)<br>
+
+
+## 6. 学会写WordCount（Java/Python-Hadoop Streaming），理解分布式/单机运行模式的区别
 ```Java
 
 ```
