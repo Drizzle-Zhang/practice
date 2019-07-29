@@ -154,7 +154,7 @@ node8: starting nodemanager, logging to /local/zy/tools/hadoop-2.7.3/logs/yarn-z
 45373 Jps
 45214 NodeManager
 ```
-
+登录网页10.152.255.52:8088即可看到yarn的管理界面<br>
 
 
 
