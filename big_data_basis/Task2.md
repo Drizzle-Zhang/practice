@@ -178,8 +178,15 @@ HDFS系统是Hadoop的储存系统，能够实现创建文件、删除文件、�
 
 １）HDFS 架构
 HDFS 是一个具有高度容错性的分布式文件系统， 适合部署在廉价的机器上。 HDFS 能提供高吞吐量的数据访问， 非常适合大规模数据集上的应用。HDFS 的架构如图所示， 总体上采用了 master/slave 架构， 主要由以下几个组件组成 ：Client、 NameNode、 Secondary NameNode 和 DataNode。 下面分别对这几个组件进行介绍：<br>
-
-
+![](https://github.com/Drizzle-Zhang/practice/blob/master/big_data_basis/HDFS.jpg)
+a) Client<br>
+Client（代表用户） 通过与 NameNode 和 DataNode 交互访问 HDFS 中的文件。 Client提供了一个类似 POSIX 的文件系统接口供用户调用。<br>
+b) NameNode<br>
+整个Hadoop 集群中只有一个 NameNode。 它是整个系统的“ 总管”， 负责管理 HDFS的目录树和相关的文件元数据信息。 这些信息是以“ fsimage”（ HDFS 元数据镜像文件）和“ editlog”（HDFS 文件改动日志）两个文件形式存放在本地磁盘，当 HDFS 重启时重新构造出来的。此外， NameNode 还负责监控各个 DataNode 的健康状态， 一旦发现某个DataNode 宕掉，则将该 DataNode 移出 HDFS 并重新备份其上面的数据。<br>
+c) Secondary NameNode<br>
+Secondary NameNode 最重要的任务并不是为 NameNode 元数据进行热备份， 而是定期合并 fsimage 和 edits 日志， 并传输给 NameNode。 这里需要注意的是，为了减小 NameNode压力， NameNode 自己并不会合并fsimage 和 edits， 并将文件存储到磁盘上， 而是交由Secondary NameNode 完成。<br>
+d) DataNode<br>
+一般而言， 每个 Slave 节点上安装一个 DataNode， 它负责实际的数据存储， 并将数据信息定期汇报给 NameNode。 DataNode 以固定大小的 block 为基本单位组织文件内容， 默认情况下 block 大小为 64MB。 当用户上传一个大的文件到 HDFS 上时， 该文件会被切分成若干个 block， 分别存储到不同的 DataNode ； 同时，为了保证数据可靠， 会将同一个block以流水线方式写到若干个（默认是 3，该参数可配置）不同的 DataNode 上。 这种文件切割后存储的过程是对用户透明的。<br>
 
 
 
