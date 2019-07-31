@@ -244,18 +244,36 @@ python的pyhdfs模块可以调用HDFS集群的API进行上传、下载、查找�
 
 参数解析：<br>
 
-* hosts:主机名 IP地址与port号之间需要用","隔开 如:hosts="45.91.43.237,9000" 多个主机时可以传入list， 如:["47.95.45.254,9000","47.95.45.235,9000"]*<br> randomize_hosts：随机选择host进行连接，默认为True
+* hosts:主机名 IP地址与port号之间需要用","隔开 如:hosts="45.91.43.237,9000" 多个主机时可以传入list， 如:["47.95.45.254,9000","47.95.45.235,9000"]*<br> 
+* randomize_hosts：随机选择host进行连接，默认为True<br> 
 * user_name:连接的Hadoop平台的用户名<br>
 * timeout:每个Namenode节点连接等待的秒数，默认20sec<br>
 * max_tries:每个Namenode节点尝试连接的次数,默认2次<br>
 * retry_delay:在尝试连接一个Namenode节点失败后，尝试连接下一个Namenode的时间间隔，默认5sec<br>
 * requests_session:连接HDFS的HTTP request请求使用的session，默认为None<br>
 
+### 2) 返回这个用户的根目录
+*get_home_directory(**kwargs)*
+
+### 3) 返回可用的namenode节点
+*get_active_namenode(max_staleness=None)*
+
+### 4) 从本地上传文件至集群
+*copy_from_local(localsrc, dest, **kwargs)*
+
+### 5) 从集群上copy到本地
+*copy_to_local(src, localdest, **kwargs)*
+
+### 6) 创建新目录
+*mkdirs(path, **kwargs)*
 
 
+## 4. 观察上传后的文件，上传大于128M的文件与小于128M的文件有何区别？
 
 
-
+## 5. 启动HDFS后，会分别启动NameNode/DataNode/SecondaryNameNode，这些进程的的作用分别是什么？
+## 6. NameNode是如何组织文件中的元信息的，edits log与fsImage的区别？使用hdfs oiv命令观察HDFS上的文件的metadata
+## 7. HDFS文件上传下载过程，源码阅读与整理。
 
 
 
