@@ -267,14 +267,70 @@ python的pyhdfs模块可以调用HDFS集群的API进行上传、下载、查找�
 ### 6) 创建新目录
 *mkdirs(path, **kwargs)*
 
+参考资料：<br>
+1. [Python3调用Hadoop的API](https://www.cnblogs.com/sss4/p/10443497.html)<br>
+2. [使用python中的pyhdfs连接HDFS进行操作——pyhdfs使用指导(附代码及运行结果)](https://blog.csdn.net/weixin_38070561/article/details/81289601)<br>
+3. [hdfs官方文档](http://pyhdfs.readthedocs.io/en/latest/pyhdfs.html#pyhdfs.HdfsClient)<br>
 
 ## 4. 观察上传后的文件，上传大于128M的文件与小于128M的文件有何区别？
+先寻找两个满足要求的文件
+```Bash
+[zy@node7 ~]$ du -sh hello.txt 
+4.0K	hello.txt
+[zy@node7 ~]$ du -sh tools/hadoop-2.7.3.tar.gz 
+205M	tools/hadoop-2.7.3.tar.gz
+```
+分别将两个文件上传到集群的test目录
+```Bash
+hadoop fs -mkdir /test
+hadoop fs -put hello.txt ./tools/hadoop-2.7.3.tar.gz /test
+```
+用stat函数统计两个文件的大小
+```Bash
+[zy@node7 ~]$ hadoop fs -stat %b /test/hello.txt
+7
+[zy@node7 ~]$ hadoop fs -stat %o /test/hello.txt
+134217728
+```
 
 
 ## 5. 启动HDFS后，会分别启动NameNode/DataNode/SecondaryNameNode，这些进程的的作用分别是什么？
-## 6. NameNode是如何组织文件中的元信息的，edits log与fsImage的区别？使用hdfs oiv命令观察HDFS上的文件的metadata
-## 7. HDFS文件上传下载过程，源码阅读与整理。
+见[Task2](https://github.com/Drizzle-Zhang/practice/blob/master/big_data_basis/Task2.md)第３部分
 
+
+## 6. NameNode是如何组织文件中的元信息的，edits log与fsImage的区别？使用hdfs oiv命令观察HDFS上的文件的metadata
+fsimage保存了最新的元数据检查点；edits保存自最新检查点后的命名空间的变化。<br>
+从最新检查点后，hadoop将对每个文件的操作都保存在edits中，为避免edits不断增大，secondary namenode就会周期性合并fsimage和edits成新的fsimage，edits再记录新的变化。<br>
+这种机制有个问题：因edits存放在Namenode中，当Namenode挂掉，edits也会丢失，导致利用secondary namenode恢复Namenode时，会有部分数据丢失。<br>
+原理如下图所示:<br>
+![](https://github.com/Drizzle-Zhang/practice/blob/master/big_data_basis/namenode)<br><br>
+
+使用hdfs oiv命令将fsimage文件转化为xml格式
+```Bash
+hdfs oiv -i fsimage_0000000000000000000 -o fsimage.xml -p XML
+vi fsimage.xml
+###
+<?xml version="1.0"?>
+<fsimage><NameSection>
+<genstampV1>1000</genstampV1><genstampV2>1000</genstampV2><genstampV1Limit>0</genstampV1Limit><lastAllocatedBlockId>1073741824</lastAllocatedBlockId><txid>0</txid></NameSection>
+<INodeSection><lastInodeId>16385</lastInodeId><inode><id>16385</id><type>DIRECTORY</type><name></name><mtime>0</mtime><permission>zy:supergroup:rwxr-xr-x</permission><nsquota>9223372036854775807</nsquota><dsquota>-1</dsquota></inode>
+</INodeSection>
+<INodeReferenceSection></INodeReferenceSection><SnapshotSection><snapshotCounter>0</snapshotCounter></SnapshotSection>
+<INodeDirectorySection></INodeDirectorySection>
+<FileUnderConstructionSection></FileUnderConstructionSection>
+<SnapshotDiffSection><diff><inodeid>16385</inodeid></diff></SnapshotDiffSection>
+<SecretManagerSection><currentId>0</currentId><tokenSequenceNumber>0</tokenSequenceNumber></SecretManagerSection><CacheManagerSection><nextDirectiveId>1</nextDirectiveId></CacheManagerSection>
+</fsimage>
+###
+```
+
+参考资料：<br>
+1. [hadoop中fsimage和edits的区别](https://blog.csdn.net/hwwn2009/article/details/40118639)<br>
+2. [查看HDFS的元数据文件fsimage和编辑日志edits（1）](http://lxw1234.com/archives/2015/08/440.htm)<br>
+3. [HDFS元数据管理](https://blog.csdn.net/weixin_42404341/article/details/83787356)
+
+## 7. HDFS文件上传下载过程，源码阅读与整理。
+见[Task2](https://github.com/Drizzle-Zhang/practice/blob/master/big_data_basis/Task2.md)第４部分
 
 
 
