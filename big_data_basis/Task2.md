@@ -183,7 +183,7 @@ HDFS系统是Hadoop的储存系统，能够实现创建文件、删除文件、�
 
 #### HDFS 架构
 HDFS 是一个具有高度容错性的分布式文件系统， 适合部署在廉价的机器上。 HDFS 能提供高吞吐量的数据访问， 非常适合大规模数据集上的应用。HDFS 的架构如图所示， 总体上采用了 master/slave 架构， 主要由以下几个组件组成 ：Client、 NameNode、 Secondary NameNode 和 DataNode。 下面分别对这几个组件进行介绍：<br>
-![](https://github.com/Drizzle-Zhang/practice/blob/master/big_data_basis/HDFS.jpg)<br>
+![](https://github.com/Drizzle-Zhang/practice/blob/master/big_data_basis/supp_Task2/HDFS.jpg)<br>
 **1) Client**<br>
 Client（代表用户） 通过与 NameNode 和 DataNode 交互访问 HDFS 中的文件。 Client提供了一个类似 POSIX 的文件系统接口供用户调用。<br>
 **2) NameNode**<br>
@@ -204,11 +204,11 @@ JobTracker 主要负责资源监控和作业调度。JobTracker监控所有TaskT
 TaskTracker 会周期性地通过 Heartbeat 将本节点上资源的使用情况和任务的运行进度汇报给 JobTracker， 同时接收 JobTracker 发送过来的命令并执行相应的操作（如启动新任务、 杀死任务等）。TaskTracker 使用“slot” 等量划分本节点上的资源量。“slot” 代表计算资源（CPU、内存等）。一个Task 获取到一个slot 后才有机会运行，而Hadoop 调度器的作用就是将各个TaskTracker 上的空闲 slot 分配给 Task 使用。 slot 分为 Map slot 和 Reduce slot 两种，分别供 MapTask 和 Reduce Task 使用。 TaskTracker 通过 slot 数目（可配置参数）限定 Task 的并发度。<br>
 **（4） Task**<br>
 Task 分为 Map Task 和 Reduce Task 两种， 均由 TaskTracker 启动。 HDFS 以固定大小的 block 为基本单位存储数据， 而对于 MapReduce 而言， 其处理单位是 split。split 与 block 的对应关系如图所示。 split 是一个逻辑概念， 它只包含一些元数据信息， 比如数据起始位置、数据长度、数据所在节点等。它的划分方法完全由用户自己决定。 但需要注意的是，split 的多少决定了 Map Task 的数目 ，因为每个 split 会交由一个 Map Task 处理。<br>
-![](https://github.com/Drizzle-Zhang/practice/blob/master/big_data_basis/split_block.jpg)<br>
+![](https://github.com/Drizzle-Zhang/practice/blob/master/big_data_basis/supp_Task2/split_block.jpg)<br>
 Map Task 执行过程如图所示。 由该图可知，Map Task 先将对应的 split 迭代解析成一个个 key/value 对，依次调用用户自定义的 map() 函数进行处理，最终将临时结果存放到本地磁盘上，其中临时数据被分成若干个 partition，每个 partition 将被一个Reduce Task 处理。<br>
-![](https://github.com/Drizzle-Zhang/practice/blob/master/big_data_basis/MapTask.jpg)<br>
+![](https://github.com/Drizzle-Zhang/practice/blob/master/big_data_basis/supp_Task2/MapTask.jpg)<br>
 Reduce Task 执行过程如图所示。该过程分为三个阶段①从远程节点上读取MapTask中间结果（称为“Shuffle 阶段”）；②按照key对key/value对进行排序（称为“ Sort 阶段”）；③依次读取<key, value list>，调用用户自定义的 reduce() 函数处理，并将最终结果存到 HDFS 上（称为“ Reduce 阶段”）。<br>
-![](https://github.com/Drizzle-Zhang/practice/blob/master/big_data_basis/MapReduce.jpg)<br>
+![](https://github.com/Drizzle-Zhang/practice/blob/master/big_data_basis/supp_Task2/MapReduce.jpg)<br>
 
 ## 4. 学会阅读HDFS源码，并自己阅读一段HDFS的源码(推荐HDFS上传/下载过程)
 关于HDFS的文件上传，主要执行过程如下：<br>
@@ -364,7 +364,7 @@ Copy 1 //DFSOutputStream.java
 RPC，即Remote Procedure Call，远程过程调用协议。<br>
 概括的说，RPC采用客户机/服务器模式。请求程序就是一个客户机，而服务提供程序就是一个服务器。首先，客户机调用进程发送一个有进程参数的调用信息到服务进程，然后等待应答信息。在服务器端，进程保持睡眠状态直到调用信息的到达为止。当一个调用信息到达，服务器获得进程参数，计算结果，发送答复信息，然后等待下一个调用信息，最后，客户端调用进程接收答复信息，获得进程结果，然后调用执行继续进行。<br>
 运行时,一次客户端对服务端的RPC调用,其内部操作大致有如下十步：<br>
-![](https://github.com/Drizzle-Zhang/practice/blob/master/big_data_basis/RPC.jpeg)<br><br>
+![](https://github.com/Drizzle-Zhang/practice/blob/master/big_data_basis/supp_Task2/RPC.jpeg)<br><br>
 参考资料：<br>
 [Hadoop基础知识小总结](https://www.cnblogs.com/pangzx/p/10296411.html)<br>
 [Hadoop RPC机制-原理篇](https://blog.csdn.net/u010010428/article/details/51345693)<br>
@@ -443,7 +443,7 @@ $HADOOP_HOME/bin/hadoop jar xxx.jar \
 -D output=/test/output
 ```
 则该作业的运行过程如图所示：<br>
-![](https://github.com/Drizzle-Zhang/practice/blob/master/big_data_basis/MapReduce_execute.jpg)<br>
+![](https://github.com/Drizzle-Zhang/practice/blob/master/big_data_basis/supp_Task2/MapReduce_execute.jpg)<br>
 这个过程分为以下 5 个步骤：<br>
 步骤 1：作业提交与初始化。 用户提交作业后， 首先由 JobClient 实例将作业相关信息， 比如将程序 jar 包、作业配置文件、 分片元信息文件等上传到分布式文件系统（ 一般为HDFS）上，其中，分片元信息文件记录了每个输入分片的逻辑位置信息。 然后 JobClient通过 RPC 通知 JobTracker。 JobTracker 收到新作业提交请求后， 由 作业调度模块对作业进行初始化：为作业创建一个 JobInProgress 对象以跟踪作业运行状况， 而 JobInProgress 则会为每个Task 创建一个 TaskInProgress 对象以跟踪每个任务的运行状态， TaskInProgress 可能需要管理多个“ Task 运行尝试”（ 称为“ Task Attempt”）。<br>
 步骤 2：任务调度与监控。 前面提到，任务调度和监控的功能均由 JobTracker 完成。TaskTracker 周期性地通过 Heartbeat 向 JobTracker 汇报本节点的资源使用 情况， 一旦出 现空闲资源， JobTracker 会按照一定的策略选择一个合适的任务使用该空闲资源， 这由任务调度器完成。 任务调度器是一个可插拔的独立模块， 且为双层架构， 即首先选择作业， 然后从该作业中选择任务， 其中，选择任务时需要重点考虑数据本地性。 此外，JobTracker 跟踪作业的整个运行过程，并为作业的成功运行提供全方位的保障。 首先， 当 TaskTracker 或者Task 失败时， 转移计算任务 ； 其次， 当某个 Task 执行进度远落后于同一作业的其他 Task 时，为之启动一个相同 Task， 并选取计算快的 Task 结果作为最终结果。<br>
