@@ -195,7 +195,7 @@ Secondary NameNode 最重要的任务并不是为 NameNode 元数据进行热备
 
 #### MapReduce 架构
 同 HDFS 一样，Hadoop MapReduce 也采用了 Master/Slave（M/S）架构，具体如图所示。它主要由以下几个组件组成：Client、JobTracker、TaskTracker 和 Task。 下面分别对这几个组件进行介绍。<br>
-![](https://github.com/Drizzle-Zhang/practice/blob/master/big_data_basis/MapReduce.jpg)<br>
+![](https://github.com/Drizzle-Zhang/practice/blob/master/big_data_basis/supp_Task2/MapReduce.jpg)<br>
 **（1） Client**<br>
 用户编写的 MapReduce 程序通过 Client 提交到 JobTracker 端； 同时， 用户可通过 Client 提供的一些接口查看作业运行状态。 在 Hadoop 内部用“作业”（Job） 表示 MapReduce 程序。 一个MapReduce 程序可对应若干个作业，而每个作业会被分解成若干个 Map/Reduce 任务（Task）。<br>
 **（2） JobTracker**<br>
