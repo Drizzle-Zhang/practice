@@ -208,7 +208,7 @@ Task 分为 Map Task 和 Reduce Task 两种， 均由 TaskTracker 启动。 HDFS
 Map Task 执行过程如图所示。 由该图可知，Map Task 先将对应的 split 迭代解析成一个个 key/value 对，依次调用用户自定义的 map() 函数进行处理，最终将临时结果存放到本地磁盘上，其中临时数据被分成若干个 partition，每个 partition 将被一个Reduce Task 处理。<br>
 ![](https://github.com/Drizzle-Zhang/practice/blob/master/big_data_basis/supp_Task2/MapTask.jpg)<br>
 Reduce Task 执行过程如图所示。该过程分为三个阶段①从远程节点上读取MapTask中间结果（称为“Shuffle 阶段”）；②按照key对key/value对进行排序（称为“ Sort 阶段”）；③依次读取<key, value list>，调用用户自定义的 reduce() 函数处理，并将最终结果存到 HDFS 上（称为“ Reduce 阶段”）。<br>
-![](https://github.com/Drizzle-Zhang/practice/blob/master/big_data_basis/supp_Task2/MapReduce.jpg)<br>
+![](https://github.com/Drizzle-Zhang/practice/blob/master/big_data_basis/supp_Task2/ReduceTask.jpg)<br>
 
 ## 4. 学会阅读HDFS源码，并自己阅读一段HDFS的源码(推荐HDFS上传/下载过程)
 关于HDFS的文件上传，主要执行过程如下：<br>
