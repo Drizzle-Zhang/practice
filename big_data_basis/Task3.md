@@ -303,7 +303,7 @@ fsimage保存了最新的元数据检查点；edits保存自最新检查点后�
 从最新检查点后，hadoop将对每个文件的操作都保存在edits中，为避免edits不断增大，secondary namenode就会周期性合并fsimage和edits成新的fsimage，edits再记录新的变化。<br>
 这种机制有个问题：因edits存放在Namenode中，当Namenode挂掉，edits也会丢失，导致利用secondary namenode恢复Namenode时，会有部分数据丢失。<br>
 原理如下图所示:<br>
-![](https://github.com/Drizzle-Zhang/practice/blob/master/big_data_basis/namenode)<br><br>
+![](https://github.com/Drizzle-Zhang/practice/blob/master/big_data_basis/supp_Task3/namenode)<br><br>
 
 使用hdfs oiv命令将fsimage文件转化为xml格式
 ```Bash
