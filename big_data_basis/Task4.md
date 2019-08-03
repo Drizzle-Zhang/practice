@@ -150,6 +150,147 @@ head de_rep/part-00000
 
 ```
 
+## 6. 使用mr实现排序。
+排序任务的具体情形是，在u.data文件中查看每个user都做出了哪些评级，并对去重过的评级进行排序
+```Python
+from mrjob.job import MRJob
+import numpy as np
+
+
+class UserAverageRating(MRJob):
+    def mapper(self, _, line):
+        list_tab = line.strip().split('\t')
+        user_id = list_tab[0]
+        rating = int(list_tab[2])
+        yield user_id, rating
+
+    def reducer(self, user_id, rating):
+        ratings = list(set(rating))
+        yield user_id, np.sort(ratings).tolist()
+
+
+if __name__ == '__main__':
+    UserAverageRating.run()
+
+```
+
+```Bash
+python sort.py -r local -o sort ./movielens/ml-100k/u.data
+
+ls sort
+part-00000  part-00002  part-00004  part-00006
+part-00001  part-00003  part-00005  part-00007
+
+head sort/part-00000
+"1"	[1,2,3,4,5]
+"10"	[3,4,5]
+"100"	[1,2,3,4,5]
+"101"	[1,2,3,4,5]
+"102"	[1,2,3,4]
+"103"	[1,2,3,4,5]
+"104"	[1,2,3,4,5]
+"105"	[2,3,4,5]
+"106"	[2,3,4,5]
+"107"	[1,2,3,4,5]
+
+```
+
+## 7. 使用mapreduce实现倒排索引。
+倒排索引任务的具体情形是，在u.data文件中查看每个user都做出了哪些评级，并得到去重过的评级的倒排索引
+```Python
+from mrjob.job import MRJob
+import numpy as np
+
+
+class UserAverageRating(MRJob):
+    def mapper(self, _, line):
+        list_tab = line.strip().split('\t')
+        user_id = list_tab[0]
+        rating = int(list_tab[2])
+        yield user_id, rating
+
+    def reducer(self, user_id, rating):
+        ratings = list(set(rating))
+        index_rev = np.argsort(ratings)[::-1]
+        yield user_id, index_rev.tolist()
+
+
+if __name__ == '__main__':
+    UserAverageRating.run()
+
+```
+
+```Bash
+python reverse_sort.py -r local -o reverse_sort ./movielens/ml-100k/u.data
+
+head reverse_sort/part-00000
+"1"	[4,3,2,1,0]
+"10"	[2,1,0]
+"100"	[4,3,2,1,0]
+"101"	[4,3,2,1,0]
+"102"	[3,2,1,0]
+"103"	[4,3,2,1,0]
+"104"	[4,3,2,1,0]
+"105"	[3,2,1,0]
+"106"	[3,2,1,0]
+"107"	[4,3,2,1,0]
+
+```
+
+## 8. 使用mapreduce计算Jaccard相似度。
+计算的具体情形是，对u.item里的影片类型进行Jaccard相似度计算,判断各个电影和电影1的相似度
+```Python
+from mrjob.job import MRJob
+import numpy as np
+from sklearn.metrics import jaccard_score
+
+
+class UserAverageRating(MRJob):
+    def mapper(self, _, line):
+        list_tube = line.strip().split('|')
+        item_id = list_tube[0]
+        item_type = list_tube[5:]
+        yield item_id, item_type
+
+    def reducer(self, item_id, item_type):
+        ref_type = \
+            np.array([0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
+        item_type0 = item_type
+        for item_type in item_type0:
+            item_type = item_type
+        item_type = [int(num) for num in item_type]
+        if len(item_type) == len(ref_type):
+            score = jaccard_score(ref_type, np.array(item_type))
+            yield item_id, score
+
+
+if __name__ == '__main__':
+    UserAverageRating.run()
+
+```
+
+```Bash
+python Jaccard.py -r local -o Jaccard ./movielens/ml-100k/u.item
+
+head Jaccard/part-00000
+"1"	1.0
+"10"	0.0
+"100"	0.0
+"1000"	0.25
+"1001"	0.3333333333
+"1002"	0.3333333333
+"1003"	0.5
+"1004"	0.0
+"1005"	0.0
+"1006"	0.0
+
+```
+
+## 9. 使用mapreduce实现PageRank。
+
+
+
+
 
 
 
