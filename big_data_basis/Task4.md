@@ -287,8 +287,36 @@ head Jaccard/part-00000
 ```
 
 ## 9. 使用mapreduce实现PageRank。
+```Python
+class PageRank(MRJob):
+    def mapper(self, _, line):
+        list_line = line.strip().split(' ')
+        node0 = list_line[0]
+        yield node0, 1
+
+    def reducer(self, node, recurrence):
+        n = 3
+        n_p = 4
+        alpha = 0.8
+        values = alpha * sum(recurrence)/n + (1 - alpha)/n_p
+
+        yield node, values
 
 
+if __name__ == '__main__':
+    PageRank.run()
+
+```
+```Bash
+python pagerank.py -r local -o pagerank ./input_page.txt
+
+head pagerank/part-00000
+"A"	0.85
+
+head pagerank/part-00001
+"B"	0.5833333333
+
+```
 
 
 
