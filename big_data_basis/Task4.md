@@ -75,7 +75,7 @@ head -6 user_ave/part-00000
 from mrjob.job import MRJob
 
 
-class UserAverageRating(MRJob):
+class Merge(MRJob):
     def mapper(self, _, line):
         list_tab = line.strip().split('\t')
         list_tube = line.strip().split('|')
@@ -93,7 +93,7 @@ class UserAverageRating(MRJob):
 
 
 if __name__ == '__main__':
-    UserAverageRating.run()
+    Merge.run()
 
 ```
 在终端运行该脚本，并查看运行结果
@@ -113,7 +113,7 @@ Python脚本如下
 from mrjob.job import MRJob
 
 
-class UserAverageRating(MRJob):
+class DeRepetition(MRJob):
     def mapper(self, _, line):
         list_tab = line.strip().split('\t')
         user_id = list_tab[0]
@@ -125,7 +125,7 @@ class UserAverageRating(MRJob):
 
 
 if __name__ == '__main__':
-    UserAverageRating.run()
+    DeRepetition.run()
 
 ```
 运行脚本并查看结果
@@ -157,7 +157,7 @@ from mrjob.job import MRJob
 import numpy as np
 
 
-class UserAverageRating(MRJob):
+class Sort(MRJob):
     def mapper(self, _, line):
         list_tab = line.strip().split('\t')
         user_id = list_tab[0]
@@ -170,7 +170,7 @@ class UserAverageRating(MRJob):
 
 
 if __name__ == '__main__':
-    UserAverageRating.run()
+    Sort.run()
 
 ```
 
@@ -202,7 +202,7 @@ from mrjob.job import MRJob
 import numpy as np
 
 
-class UserAverageRating(MRJob):
+class ReverseSort(MRJob):
     def mapper(self, _, line):
         list_tab = line.strip().split('\t')
         user_id = list_tab[0]
@@ -216,7 +216,7 @@ class UserAverageRating(MRJob):
 
 
 if __name__ == '__main__':
-    UserAverageRating.run()
+    ReverseSort.run()
 
 ```
 
@@ -245,7 +245,7 @@ import numpy as np
 from sklearn.metrics import jaccard_score
 
 
-class UserAverageRating(MRJob):
+class Jaccard(MRJob):
     def mapper(self, _, line):
         list_tube = line.strip().split('|')
         item_id = list_tube[0]
@@ -265,7 +265,7 @@ class UserAverageRating(MRJob):
 
 
 if __name__ == '__main__':
-    UserAverageRating.run()
+    Jaccard.run()
 
 ```
 
