@@ -391,6 +391,22 @@ res4: Array[Int] = Array(1, 2, 3, 3)
 
 
 ## 9. 向集群提交Spark程序
+### 启动Spark集群
+请登录Linux系统，打开一个终端，启动Hadoop集群；然后启动Spark的Master节点和所有slaves节点
+```Shell
+$HADOOP_HOME/sbin/start-all.sh
+cd $SPARK_HOME
+sbin/start-master.sh
+sbin/start-slaves.sh
+```
+### 独立集群管理器
+（1）在集群中运行应用程序JAR包
+向独立集群管理器提交应用，需要把spark：//master:7077作为主节点参数递给spark-submit。下面我们可以运行Spark安装好以后自带的样例程序SparkPi，它的功能是计算得到pi的值（3.1415926）。
+在Shell中输入如下命令：
+```Shell
+bin/spark-submit --class org.apache.spark.examples.SparkPi --master spark://master:7077 examples/jars/spark-examples_2.11-2.0.2.jar 100 2>&1 | grep "Pi is roughly"
+```
+
 ## 10. 使用spark计算《The man of property》中共出现过多少不重复的单词，以及出现次数最多的10个单词。 
 ## 11. 计算出movielen数据集中，平均评分最高的五个电影。
 ## 12. 计算出movielen中，每个用户最喜欢的前5部电影
