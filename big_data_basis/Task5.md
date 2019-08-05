@@ -172,6 +172,30 @@ RDD是Spark的基本抽象，是一个弹性分布式数据集，代表着不可
 
 ## 4. 使用shell方式操作Spark，熟悉RDD的基本操作
 
+RDD的操作分为两种，一种是转化操作，一种是执行操作，转化操作并不会立即执行，而是到了执行操作才会被执行<br>
+
+### 转化操作：
+
+`map()` 参数是函数，函数应用于RDD每一个元素，返回值是新的RDD<br>
+`flatMap()` 参数是函数，函数应用于RDD每一个元素，将元素数据进行拆分，变成迭代器，返回值是新的RDD<br>
+`filter()` 参数是函数，函数会过滤掉不符合条件的元素，返回值是新的RDD<br>
+`distinct()` 没有参数，将RDD里的元素进行去重操作<br>
+`union()` 参数是RDD，生成包含两个RDD所有元素的新RDD<br>
+`intersection()` 参数是RDD，求出两个RDD的共同元素<br>
+`subtract()` 参数是RDD，将原RDD里和参数RDD里相同的元素去掉<br>
+`cartesian()` 参数是RDD，求两个RDD的笛卡儿积<br>
+
+### 行动操作：
+
+collect() 返回RDD所有元素
+count() RDD里元素个数
+countByValue() 各元素在RDD中出现次数
+reduce() 并行整合所有RDD数据，例如求和操作
+fold(0)(func) 和reduce功能一样，不过fold带有初始值
+aggregate(0)(seqOp,combop) 和reduce功能一样，但是返回的RDD数据类型和原RDD不一样
+foreach(func) 对RDD每个元素都是使用特定函数
+
+行动操作每次的调用时不会存储前面的计算结果的，若果想要存储前面的操作结果需要把结果加载需要在需要缓存中间结果的RDD调用cache(),cache()方法是把中间结果缓存到内存中，也可以指定缓存到磁盘中（也可以只用persisit()）
 
 
 **Reference:**<br>
