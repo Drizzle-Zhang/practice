@@ -400,17 +400,65 @@ sbin/start-master.sh
 sbin/start-slaves.sh
 ```
 ### 独立集群管理器
-（1）在集群中运行应用程序JAR包
-向独立集群管理器提交应用，需要把spark：//master:7077作为主节点参数递给spark-submit。下面我们可以运行Spark安装好以后自带的样例程序SparkPi，它的功能是计算得到pi的值（3.1415926）。
+（1）在集群中运行应用程序JAR包<br>
+向独立集群管理器提交应用，需要把spark：//master:7077作为主节点参数递给spark-submit。下面我们可以运行Spark安装好以后自带的样例程序SparkPi，它的功能是计算得到pi的值（3.1415926）。<br>
 在Shell中输入如下命令：
 ```Shell
 bin/spark-submit --class org.apache.spark.examples.SparkPi --master spark://master:7077 examples/jars/spark-examples_2.11-2.0.2.jar 100 2>&1 | grep "Pi is roughly"
 ```
+（2）在集群中运行pyspark
+```Shell
+pyspark
+```
+可以在pyspark中输入如下代码进行测试：
+```Python
+>>> textFile = sc.textFile("hdfs://master:9000/README.md")
+>>> textFile.count()
+99                                                                 
+>>> textFile.first()
+# Apache Spark
+```
+
+### Hadoop YARN管理器
+（1）在集群中运行应用程序JAR包<br>
+向Hadoop YARN集群管理器提交应用，需要把yarn-cluster作为主节点参数递给spark-submit。<br>
+
+（2）在集群中运行pyspark<br>
+也可以用pyspark连接到独立集群管理器上。<br><br>
+
+**Reference:**<br>
+1. [在集群上运行Spark应用程序(Python版)](http://dblab.xmu.edu.cn/blog/1699-2/)<br><br>
 
 ## 10. 使用spark计算《The man of property》中共出现过多少不重复的单词，以及出现次数最多的10个单词。 
+
+
+
+**Reference:**<br>
+1. [Spark案例：Python版统计单词个数](https://blog.csdn.net/howard2005/article/details/79331562)<br>
+2. [Python3：Python+spark编程实战 总结](https://blog.csdn.net/proplume/article/details/79798289)<br><br>
+
+
+
 ## 11. 计算出movielen数据集中，平均评分最高的五个电影。
+
+
+**Reference:**<br>
+1. [基于Spark实现电影点评系统用户行为分析—RDD篇（一）](https://www.xuejiayuan.net/blog/34c3cddbce1241d88e476033796115ac)<br>
+2. [ 第一篇：使用Spark探索经典数据集MovieLens](https://www.cnblogs.com/muchen/p/6881823.html)<br><br>
+
+
 ## 12. 计算出movielen中，每个用户最喜欢的前5部电影
+
+
+
+
 ## 13. 学会阅读Spark源码，整理Spark任务submit过程
+
+**Reference:**<br>
+1. [Spark源码阅读: Spark Submit任务提交](http://www.louisvv.com/archives/1340.html)<br>
+2. [Spark 源码阅读（5）——Spark-submit任务提交流程](https://blog.csdn.net/qq_21989939/article/details/79598323)<br><br>
+
+
 
 
 
