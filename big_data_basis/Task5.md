@@ -78,7 +78,7 @@ node7在Hadoop的基础上新增了：Master<br>
 node8,node9在Hadoop的基础上新增了：Worker<br><br>
 
 **Reference:**<br>
-1. [Spark伪分布式环境搭建 + jupyter连接spark集群 ](https://mp.weixin.qq.com/s?__biz=MzI3Mjg1OTA3NQ==&mid=2247483893&idx=1&sn=84496036abf5c302806f2daa9655bd6a&chksm=eb2d6b59dc5ae24fae6d483547778fc7bbe1054094ca97b4c152fdd79bbc8b0ed3e14ffefbfd&mpshare=1&scene=1&srcid=&sharer_sharetime=1564900973740&sharer_shareid=8ac76a2e8d1b620817577ca68d2d215f&key=1a2eded5d1d2d5f7e5ff6b1d226694b4aed37afd13c5472df38cb96541ce31181690e47492a199c87dcdff8410f92dd3c4fb25dc3c00b4c5dba4e30a0ef826d8c81f4db1037d3fbcffbc2f31f3cdb1ef&ascene=1&uin=MTExNjkzNDEwNg%3D%3D&devicetype=Windows+10&version=62060833&lang=zh_CN&pass_ticket=Ika06k3RtS5H%2BXm0gmTpvebwTIuC5uQymoAZxQ6aQvMyKbEjXvF2WCwOqYhWuCiN)<br>
+1. [Spark伪分布式环境搭建 + jupyter连接spark集群 ](https://mp.weixin.qq.com/s?__biz=MzI3Mjg1OTA3NQ==&mid=2247483893&idx=1&sn=84496036abf5c302806f2daa9655bd6a&chksm=eb2d6b59dc5ae24fae6d483547778fc7bbe1054094ca97b4c152fdd79bbc8b0ed3e14ffefbfd&mpshare=1&scene=1&srcid=&sharer_sharetime=1564900973740&sharer_shareid=8ac76a2e8d1b620817577ca68d2d215f&key=1a2eded5d1d2d5f7e5ff6b1d226694b4aed37afd13c5472df38cb96541ce31181690e47492a199c87dcdff8410f92dd3c4fb25dc3c00b4c5dba4e30a0ef826d8c81f4db1037d3fbcffbc2f31f3cdb1ef&ascene=1&uin=MTExNjkzNDEwNg%3D%3D&devicetype=Windows+10&version=62060833&lang=zh_CN&pass_ticket=Ika06k3RtS5H%2BXm0gmTpvebwTIuC5uQymoAZxQ6aQvMyKbEjXvF2WCwOqYhWuCiN)<br><br>
 
 
 ## 2. 初步认识Spark （解决什么问题，为什么比Hadoop快，基本组件及架构Driver/）
@@ -98,44 +98,44 @@ Spark Task的启动时间快。Spark采用fork线程的方式，Spark每次MapRe
 核心部分是RDD相关的，就是我们前面介绍的任务调度的架构，后面会做更加详细的说明。<br>
 
 **SparkStreaming：**<br>
-基于SparkCore实现的可扩展、高吞吐、高可靠性的实时数据流处理。支持从Kafka、Flume等数据源处理后存储到HDFS、DataBase、Dashboard中。<br><br>
+基于SparkCore实现的可扩展、高吞吐、高可靠性的实时数据流处理。支持从Kafka、Flume等数据源处理后存储到HDFS、DataBase、Dashboard中。<br>
 
 **MLlib：**<br>
-关于机器学习的实现库。<br><br>
+关于机器学习的实现库。<br>
 
 **SparkSQL：**<br>
-Spark提供的sql形式的对接Hive、JDBC、HBase等各种数据渠道的API，用Java开发人员的思想来讲就是面向接口、解耦合，ORMapping、Spring Cloud Stream等都是类似的思想。<br><br>
+Spark提供的sql形式的对接Hive、JDBC、HBase等各种数据渠道的API，用Java开发人员的思想来讲就是面向接口、解耦合，ORMapping、Spring Cloud Stream等都是类似的思想。<br>
 
 **GraphX：**<br>
-关于图和图并行计算的API。<br><br>
+关于图和图并行计算的API。<br>
  
 **RDD(Resilient Distributed Datasets) 弹性分布式数据集**<br>
 RDD支持两种操作：转换（transiformation）和动作（action）<br>
 转换就是将现有的数据集创建出新的数据集，像Map；动作就是对数据集进行计算并将结果返回给Driver，像Reduce。<br>
 RDD中转换是惰性的，只有当动作出现时才会做真正运行。这样设计可以让Spark更见有效的运行，因为我们只需要把动作要的结果送给Driver就可以了而不是整个巨大的中间数据集。<br>
-缓存技术（不仅限内存，还可以是磁盘、分布式组件等）是Spark构建迭代式算法和快速交互式查询的关键，当持久化一个RDD后每个节点都会把计算分片结果保存在缓存中，并对此数据集进行的其它动作（action）中重用，这就会使后续的动作（action）变得跟迅速（经验值10倍）。例如RDD0àRDD1àRDD2，执行结束后RDD1和RDD2的结果已经在内存中了，此时如果又来RDD0àRDD1àRDD3，就可以只计算最后一步了。<br><br>
+缓存技术（不仅限内存，还可以是磁盘、分布式组件等）是Spark构建迭代式算法和快速交互式查询的关键，当持久化一个RDD后每个节点都会把计算分片结果保存在缓存中，并对此数据集进行的其它动作（action）中重用，这就会使后续的动作（action）变得跟迅速（经验值10倍）。例如RDD0àRDD1àRDD2，执行结束后RDD1和RDD2的结果已经在内存中了，此时如果又来RDD0àRDD1àRDD3，就可以只计算最后一步了。<br>
 
 
 
 ### Spark架构
 ![](https://github.com/Drizzle-Zhang/practice/blob/master/big_data_basis/supp_Task5/structure.png)<br>
 **ClusterManage**r<br>
-负责分配资源，有点像YARN中ResourceManager那个角色，大管家握有所有的干活的资源，属于乙方的总包。<br><br>
+负责分配资源，有点像YARN中ResourceManager那个角色，大管家握有所有的干活的资源，属于乙方的总包。<br>
 
 **WorkerNode**<br>
-是可以干活的节点，听大管家ClusterManager差遣，是真正有资源干活的主。<br><br>
+是可以干活的节点，听大管家ClusterManager差遣，是真正有资源干活的主。<br>
 
 **Executor**<br>
-是在WorkerNode上起的一个进程，相当于一个包工头，负责准备Task环境和执行Task，负责内存和磁盘的使用。<br><br>
+是在WorkerNode上起的一个进程，相当于一个包工头，负责准备Task环境和执行Task，负责内存和磁盘的使用。<br>
 
 **Task**<br>
-是施工项目里的每一个具体的任务。<br><br>
+是施工项目里的每一个具体的任务。<br>
 
 **Driver**<br>
-是统管Task的产生与发送给Executor的，是甲方的司令员。<br><br>
+是统管Task的产生与发送给Executor的，是甲方的司令员。<br>
 
 **SparkContext**<br>
-是与ClusterManager打交道的，负责给钱申请资源的，是甲方的接口人。<br><br>
+是与ClusterManager打交道的，负责给钱申请资源的，是甲方的接口人。<br>
 
 
 整个互动流程是这样的：<br>
@@ -153,9 +153,31 @@ RDD中转换是惰性的，只有当动作出现时才会做真正运行。这�
 1. [Spark基础全解析](https://blog.csdn.net/vinfly_li/article/details/79396821)<br>
 2. [spark为什么比hadoop的mr要快？(https://www.cnblogs.com/wqbin/p/10217994.html)<br>
 3. [Spark原理详解](https://blog.csdn.net/yejingtao703/article/details/79438572)<br>
+4. [spark核心技术原理透视一（Spark运行原理）](https://blog.csdn.net/liuxiangke0210/article/details/79687240)<br>
+5. [Spark原理小总结](https://www.cnblogs.com/atomicbomb/p/7488278.html)<br><br>
 
 
-## 
+## 3. 理解spark的RDD
+
+RDD是Spark的基本抽象，是一个弹性分布式数据集，代表着不可变的，分区（partition）的集合，能够进行并行计算。也即是说：<br>
+1. 它是一系列的分片、比如说128M一片，类似于Hadoop的split；<br>
+2. 在每个分片上都有一个函数去执行/迭代/计算它<br>
+3. 它也是一系列的依赖，比如RDD1转换为RDD2，RDD2转换为RDD3，那么RDD2依赖于RDD1，RDD3依赖于RDD2。<br>
+4. 对于一个Key-Value形式的RDD，可以指定一个partitioner，告诉它如何分片，常用的有hash、range<br>
+5. 可选择指定分区最佳计算位置<br>
+
+**Reference:**<br>
+[Spark基础全解析](https://blog.csdn.net/vinfly_li/article/details/79396821)<br><br>
+
+
+## 4. 使用shell方式操作Spark，熟悉RDD的基本操作
+
+
+
+**Reference:**<br>
+1. [spark-shell基本的RDD操作](https://blog.csdn.net/vinfly_li/article/details/79396821)<br>
+2. [Spark基础全解析](https://blog.csdn.net/vinfly_li/article/details/79396821)<br><br>
+
 
 
 
