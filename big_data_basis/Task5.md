@@ -203,9 +203,93 @@ RDD的操作分为两种，一种是转化操作，一种是执行操作，转�
 2. [Spark基础全解析](https://blog.csdn.net/vinfly_li/article/details/79396821)<br><br>
 
 
+##  5. 使用jupyter连接集群的pyspark
+先在node7上进行操作<br>
+先备份系统自带的python，然后安装Anaconda
+```Bash
+[zy@node7 tools]$ ll /usr/bin/python
+lrwxrwxrwx 1 root root 7 May 27  2017 /usr/bin/python -> python2
+[root@node7 tools]# mv /usr/bin/python /usr/bin/python.bak
+[root@node7 tools]# sh Anaconda3-2019.07-Linux-x86_64.sh
+```
+生成配置文件
+```Bash
+[zy@node7 tools]$ jupyter notebook --generate-config
+Writing default config to: /local/zy/.jupyter/jupyter_notebook_config.py
+```
+打开python窗口，并输入
+```Python
+[zy@node7 tools]$ python
+Python 3.7.3 (default, Mar 27 2019, 22:11:17) 
+[GCC 7.3.0] :: Anaconda, Inc. on linux
+Type "help", "copyright", "credits" or "license" for more information.
+>>> from notebook.auth import passwd
+>>> passwd()
+Enter password: 
+Verify password: 
+'sha1:182bc6e73e06:efa239a9d2e45947bfdd1da9472afd3e604e77f1'
+```
+修改配置文件
+```
+vim ~/.jupyter/jupyter_notebook_config.py
+###
+## The IP address the notebook server will listen on.
+c.NotebookApp.ip = '0.0.0.0' # 所有IP可访问
+
+#  The string should be of the form type:salt:hashed-password.
+c.NotebookApp.password = 'sha1:182bc6e73e06:efa239a9d2e45947bfdd1da9472afd3e604e77f1' # 刚刚生成的密匙
+
+#  configuration option.
+c.NotebookApp.open_browser = False # 禁止自动打开浏览器
+
+## The port the notebook server will listen on.
+c.NotebookApp.port = 8888  # 指定８８８８端口
+
+###
+```
+远程端启动jupyter
+```Bash
+[zy@node7 tools]$ jupyter notebook
+```
+在浏览器上输入localhost:8888也可以远程访问jupyter<br><br>
+
+接下来使用jupyter链接spark集群，先安装pyspark包
+```
+pip install pypandoc py4j pyspark
+```
+配置环境变量
+```
+export PYSPARK_DRIVER_PYTHON=/local/zy/tools/anaconda3/bin/jupyter-notebook
+export PYSPARK_DRIVER_PYTHON_OPTS="--ip=0.0.0.0 --port=8888"
+```
+远程启动pyspark
+```
+[zy@node7 tools]$ pyspark
+[I 13:07:48.657 NotebookApp] JupyterLab extension loaded from /local/zy/tools/anaconda3/lib/python3.7/site-packages/jupyterlab
+[I 13:07:48.657 NotebookApp] JupyterLab application directory is /local/zy/tools/anaconda3/share/jupyter/lab
+[I 13:07:48.659 NotebookApp] Serving notebooks from local directory: /local/zy/tools
+[I 13:07:48.659 NotebookApp] The Jupyter Notebook is running at:
+[I 13:07:48.659 NotebookApp] http://node7:8888/
+[I 13:07:48.659 NotebookApp] Use Control-C to stop this server and shut down all kernels (twice to skip confirmation).
+
+```
+在本地浏览器输入localhost:8888就可以访问远程服务器上的jupyter了
 
 
+**Reference:**<br>
+1. [Spark伪分布式环境搭建 + jupyter连接spark集群 ](https://mp.weixin.qq.com/s?__biz=MzI3Mjg1OTA3NQ==&mid=2247483893&idx=1&sn=84496036abf5c302806f2daa9655bd6a&chksm=eb2d6b59dc5ae24fae6d483547778fc7bbe1054094ca97b4c152fdd79bbc8b0ed3e14ffefbfd&mpshare=1&scene=1&srcid=&sharer_sharetime=1564900973740&sharer_shareid=8ac76a2e8d1b620817577ca68d2d215f&key=1a2eded5d1d2d5f7e5ff6b1d226694b4aed37afd13c5472df38cb96541ce31181690e47492a199c87dcdff8410f92dd3c4fb25dc3c00b4c5dba4e30a0ef826d8c81f4db1037d3fbcffbc2f31f3cdb1ef&ascene=1&uin=MTExNjkzNDEwNg%3D%3D&devicetype=Windows+10&version=62060833&lang=zh_CN&pass_ticket=Ika06k3RtS5H%2BXm0gmTpvebwTIuC5uQymoAZxQ6aQvMyKbEjXvF2WCwOqYhWuCiN)<br><br>
 
+
+## 6. 理解Spark的shuffle过程
+
+
+## 7. 学会使用SparkStreaming
+## 8. 说一说take,collect,first的区别，为什么不建议使用collect？
+## 9. 向集群提交Spark程序
+## 10. 使用spark计算《The man of property》中共出现过多少不重复的单词，以及出现次数最多的10个单词。 
+## 11. 计算出movielen数据集中，平均评分最高的五个电影。
+## 12. 计算出movielen中，每个用户最喜欢的前5部电影
+## 13. 学会阅读Spark源码，整理Spark任务submit过程
 
 
 
