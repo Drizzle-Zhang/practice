@@ -356,11 +356,38 @@ Spark Streaming每隔20秒就监听一次。但是，监听程序只监听日志
 
 **Reference:**<br>
 1. [SparkStreaming教程](https://www.jianshu.com/p/f11e6611bc7a)<br>
-2. [Spark学习(Python版本)：SparkStreaming基本操作](https://www.jianshu.com/p/66d3914f4cf1)<br>
-3. [关于spark shuffle过程的理解](https://blog.csdn.net/quitozang/article/details/80904040)<br><br>
+2. [Spark学习(Python版本)：SparkStreaming基本操作](https://www.jianshu.com/p/66d3914f4cf1)<br><br>
 
 
 ## 8. 说一说take,collect,first的区别，为什么不建议使用collect？
+
+first: 返回第一个元素 
+```
+scala> val rdd = sc.parallelize(List(1,2,3,3))
+ 
+scala> rdd.first()
+res1: Int = 1
+```
+take: rdd.take(n)返回第n个元素 
+```
+scala> val rdd = sc.parallelize(List(1,2,3,3))
+ 
+scala> rdd.take(2)
+res3: Array[Int] = Array(1, 2)
+```
+collect: rdd.collect() 返回 RDD 中的所有元素 
+```
+scala> val rdd = sc.parallelize(List(1,2,3,3))
+ 
+scala> rdd.collect()
+res4: Array[Int] = Array(1, 2, 3, 3)
+```
+如果数据量比较大的时候，尽量不要使用collect函数，因为这可能导致Driver端内存溢出问题。
+
+
+**Reference:**<br>
+1. [spark RDD算子（九）之基本的Action操作 first, take, collect, count, countByValue, reduce, aggregate, fold,top](https://blog.csdn.net/t1dmzks/article/details/70667011)<br>
+2. [Spark函数讲解：collect](https://blog.csdn.net/LW_GHY/article/details/51477130)<br><br>
 
 
 ## 9. 向集群提交Spark程序
