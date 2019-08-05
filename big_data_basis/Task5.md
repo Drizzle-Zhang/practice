@@ -281,10 +281,88 @@ export PYSPARK_DRIVER_PYTHON_OPTS="--ip=0.0.0.0 --port=8888"
 
 
 ## 6. 理解Spark的shuffle过程
+### Shuffle的作用
+Shuffle的中文解释为“洗牌操作”，可以理解成将集群中所有节点上的数据进行重新整合分类的过程。其思想来源于hadoop的mapReduce,Shuffle是连接map阶段和reduce阶段的桥梁。由于分布式计算中，每个阶段的各个计算节点只处理任务的一部分数据，若下一个阶段需要依赖前面阶段的所有计算结果时，则需要对前面阶段的所有计算结果进行重新整合和分类，这就需要经历shuffle过程。
+在spark中，RDD之间的关系包含窄依赖和宽依赖，其中宽依赖涉及shuffle操作。因此在spark程序的每个job中，都是根据是否有shuffle操作进行阶段（stage）划分，每个stage都是一系列的RDD map操作。<br>
+
+### shuffle操作为什么耗时
+shuffle操作需要将数据进行重新聚合和划分，然后分配到集群的各个节点上进行下一个stage操作，这里会涉及集群不同节点间的大量数据交换。由于不同节点间的数据通过网络进行传输时需要先将数据写入磁盘，因此集群中每个节点均有大量的文件读写操作，从而导致shuffle操作十分耗时（相对于map操作）。<br>
+
+### Spark目前的ShuffleManage模式及处理机制
+Spark程序中的Shuffle操作是通过shuffleManage对象进行管理。Spark目前支持的ShuffleMange模式主要有两种：HashShuffleMagnage 和SortShuffleManage
+Shuffle操作包含当前阶段的Shuffle Write（存盘）和下一阶段的Shuffle Read（fetch）,两种模式的主要差异是在Shuffle Write阶段，下面将着重介绍。<br>
+
+**Reference:**<br>
+1. [Spark 的Shuffle过程详解](https://blog.csdn.net/zylove2010/article/details/79067149)<br>
+2. [彻底搞懂spark的shuffle过程（shuffle write）](https://www.cnblogs.com/itboys/p/9201750.html)<br>
+3. [关于spark shuffle过程的理解](https://blog.csdn.net/quitozang/article/details/80904040)<br><br>
 
 
 ## 7. 学会使用SparkStreaming
+
+### Spark Streaming程序基本步骤
+1.通过创建输入DStream来定义输入源<br>
+2.通过对DStream应用转换操作和输出操作来定义流计算。<br>
+3.用streamingContext.start()来开始接收数据和处理流程。<br>
+4.通过streamingContext.awaitTermination()方法来等待处理结束（手动结束或因为错误而结束）。<br>
+5.可以通过streamingContext.stop()来手动结束流计算进程。<br><br>
+
+### 创建StreamingContext对象
+请登录Linux系统，启动pyspark。进入pyspark以后，就已经获得了一个默认的SparkConext，也就是sc。因此，可以采用如下方式来创建StreamingContext对象：
+```Python
+>>> from pyspark import SparkContext
+>>> from pyspark.streaming import StreamingContext
+>>> ssc = StreamingContext(sc, 1)
+```
+1表示每隔1秒钟就自动执行一次流计算，这个秒数可以自由设定。<br>
+如果是编写一个独立的Spark Streaming程序，而不是在pyspark中运行，则需要通过如下方式创建StreamingContext对象：
+```Python
+from pyspark import SparkContext, SparkConf
+from pyspark.streaming import StreamingContext
+conf = SparkConf()
+conf.setAppName('TestDStream') # 设置应用程序名称
+conf.setMaster('local[2]') # local[2]表示本地模式，启动2个工作线程
+sc = SparkContext(conf = conf)
+ssc = StreamingContext(sc, 1)
+```
+
+### 文件流(DStream) - 命令行中监听
+Spark支持从兼容HDFS API的文件系统中读取数据，创建数据流。<br>
+为了能够演示文件流的创建，我们需要首先创建一个日志目录，并在里面放置两个模拟的日志文件。log1.txt输入：
+```
+I love Hadoop
+I love Spark
+Spark is fast
+```
+请另外打开一个终端窗口，启动进入pyspark
+```
+>>> from operator import add
+>>> from pyspark import SparkContext
+>>> from pyspark.streaming import StreamingContext
+>>> ssc = StreamingContext(sc,20)
+>>> lines = ssc.textFileStream('/local/zy/spark/logfile')
+>>> words = lines.flatMap(lambda line:line.split(' '))
+>>> wordCounts = words.map(lambda word:(word,1)).reduceByKey(add)
+>>> wordCounts.pprint()
+>>> ssc.start()
+>>> ssc.awaitTermination()
+>>> ssc.awaitTermination()
+```
+输入ssc.start()以后，程序就开始自动进入循环监听状态，屏幕上会显示一堆的信息,下面的ssc.awaitTermination()是无法输入到屏幕上的。<br>
+Spark Streaming每隔20秒就监听一次。但是，监听程序只监听日志目录下在程序启动后新增的文件，不会去处理历史上已经存在的文件。所以，为了让我们能够看到效果，需要到日志目录下再新建一个log3.txt文件。请打开另外一个终端窗口再新建一个log3.txt文件，里面随便输入一些英文单词，保存后再切换回到spark-shell窗口。<br>
+现在你会发现屏幕上不断输出新的信息，导致你无法看清。所以必须停止这个监听程序，按键盘Ctrl+D，或者Ctrl+C。<br>
+你可以看到屏幕上，在一大堆输出信息中，你可以找到打印出来的单词统计信息。<br>
+
+
+**Reference:**<br>
+1. [SparkStreaming教程](https://www.jianshu.com/p/f11e6611bc7a)<br>
+2. [Spark学习(Python版本)：SparkStreaming基本操作](https://www.jianshu.com/p/66d3914f4cf1)<br>
+3. [关于spark shuffle过程的理解](https://blog.csdn.net/quitozang/article/details/80904040)<br><br>
+
+
 ## 8. 说一说take,collect,first的区别，为什么不建议使用collect？
+
+
 ## 9. 向集群提交Spark程序
 ## 10. 使用spark计算《The man of property》中共出现过多少不重复的单词，以及出现次数最多的10个单词。 
 ## 11. 计算出movielen数据集中，平均评分最高的五个电影。
