@@ -187,15 +187,15 @@ RDD的操作分为两种，一种是转化操作，一种是执行操作，转�
 
 ### 行动操作：
 
-collect() 返回RDD所有元素
-count() RDD里元素个数
-countByValue() 各元素在RDD中出现次数
-reduce() 并行整合所有RDD数据，例如求和操作
-fold(0)(func) 和reduce功能一样，不过fold带有初始值
-aggregate(0)(seqOp,combop) 和reduce功能一样，但是返回的RDD数据类型和原RDD不一样
-foreach(func) 对RDD每个元素都是使用特定函数
+`collect()` 返回RDD所有元素<br>
+`count()` RDD里元素个数<br>
+`countByValue()` 各元素在RDD中出现次数<br>
+`reduce()` 并行整合所有RDD数据，例如求和操作<br>
+`fold(0)(func)` 和reduce功能一样，不过fold带有初始值<br>
+`aggregate(0)(seqOp,combop)` 和reduce功能一样，但是返回的RDD数据类型和原RDD不一样<br>
+`foreach(func)` 对RDD每个元素都是使用特定函数<br>
 
-行动操作每次的调用时不会存储前面的计算结果的，若果想要存储前面的操作结果需要把结果加载需要在需要缓存中间结果的RDD调用cache(),cache()方法是把中间结果缓存到内存中，也可以指定缓存到磁盘中（也可以只用persisit()）
+行动操作每次的调用时不会存储前面的计算结果的，若果想要存储前面的操作结果需要把结果加载需要在需要缓存中间结果的RDD调用`cache()`,cache()方法是把中间结果缓存到内存中，也可以指定缓存到磁盘中（也可以只用`persisit()`）<br>
 
 
 **Reference:**<br>
