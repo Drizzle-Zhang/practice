@@ -50,10 +50,16 @@
 ## 4. 理解不同的结合策略(平均法，投票法，学习法)
 
 ### 平均法
-对数值型输出
-简单平均法<br>![](http://latex.codecogs.com/gif.latex?\$h_{i}(x)\in \mathbb{R}$)，最常见的结合策略是使用平均法
+对数值型输出![](http://latex.codecogs.com/gif.latex?\$$h_{i}(x)\in\mathbb{R}$$)，最常见的结合策略是使用平均法<br>
+* 简单平均法
 ![](http://latex.codecogs.com/gif.latex?\$$H(x)=\frac{1}{T}\sum_{i=1}^{T}h_{i}(x)$$)<br>
-和加权平均法<br>
+* 加权平均法
 ![](http://latex.codecogs.com/gif.latex?\$$H(x)=\sum_{i=1}^{T}\omega_{i}h_{i}(x)$$)<br>
 
-### 
+### 投票法
+对分类任务来说，学习器将从类别标记集合中预测出一个标记, 最常见的结合策略是使用投票法(voting).<br>
+* 绝对多数投票法
+
+
+
+
