@@ -210,6 +210,31 @@ Hive相关配置<br>
     </description>
   </property>
 
+# 数据库的驱动类名称
+# 新版本8.0版本的驱动为com.mysql.cj.jdbc.Driver
+# 旧版本5.x版本的驱动为com.mysql.jdbc.Driver
+  <property>
+    <name>javax.jdo.option.ConnectionDriverName</name>
+    <value>com.mysql.cj.jdbc.Driver</value>
+  </property>
+  
+# 数据库用户名
+  <property>
+    <name>javax.jdo.option.ConnectionUserName</name>
+    <value>zy</value>
+  </property>
+ 
+# 数据库密码
+   <property>
+    <name>javax.jdo.option.ConnectionPassword</name>
+    <value>123456</value> #修改为你自己的mysql密码
+  </property>
+
+  <property>
+    <name>hive.metastore.schema.verification</name>
+    <value>false</value>
+  </property>
+
 ```
 
 
