@@ -127,6 +127,16 @@ mysql>
 export HIVE_HOME=/local/zy/tools/apache-hive-2.1.1-bin
 export PATH=$PATH:$HIVE_HOME/bin
 ```
+<br>
+
+**Reference:**<br>
+1. [CentOS 7 下使用yum安装MySQL5.7.20 最简单 图文详解](https://blog.csdn.net/z13615480737/article/details/78906598)<br>
+2. [centos7安装mysql5.7](https://blog.51cto.com/13941177/2176400)<br>
+<br>
+
+
+
+## 2. 采用MySQL作为hive元数据库
 创建hive-site.xml 文件
 ```
 [zy@node7 tools]$ cd apache-hive-2.1.1-bin/
@@ -344,14 +354,13 @@ schemaTool completed
 
 
 **Reference:**<br>
-1. [CentOS 7 下使用yum安装MySQL5.7.20 最简单 图文详解](https://blog.csdn.net/z13615480737/article/details/78906598)<br>
-2. [centos7安装mysql5.7](https://blog.51cto.com/13941177/2176400)<br>
-3. [CentOs7 Hadoop-3.0.3 搭建Hive-2.3.5](https://blog.csdn.net/zhouzhiwengang/article/details/94576029)<br>
-4. [https://blog.csdn.net/qq_39315740/article/details/98626518](https://blog.csdn.net/qq_39315740/article/details/98626518)<br>
+1. [Linux CentOS7 安装Hive3.1.1](https://blog.csdn.net/qq_39680564/article/details/89714184#42__44)<br>
+2. [CentOs7 Hadoop-3.0.3 搭建Hive-2.3.5](https://blog.csdn.net/zhouzhiwengang/article/details/94576029)<br>
+3. [CentOS7+ Hadoop3.2.0+MySQL5.7安装配置Hive3.1.1](https://blog.csdn.net/qq_39315740/article/details/98626518)<br>
 <br>
 
 
-
+## 3. Hive与传统RDBMS的区别
 
 
 
