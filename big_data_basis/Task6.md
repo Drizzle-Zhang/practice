@@ -383,13 +383,19 @@ rdbms的SQL为标准SQL，功能较为强大。<br>
 
  rdbms里，表的加载模式是在数据加载时候强制确定的（表的加载模式是指数据库存储数据的文件格式），如果加载数据
 时候发现加载的数据不符合模式，关系数据库则会拒绝加载数据，这个就叫“写时模式”，写时模式会在数据加载时候对数据模
-式进行检查校验的操作。<br>
+式进行检查校验的操作。<br><br>
 
 总的来说，Hive是数据仓库适合存储历史的海量的数据，适合做批量和海量复杂运算，事务性差，运算时间长。<br>
-RDBMS是数据库，存储数据量偏小一些，事务性强，适合做OLTP和OLAP业务，运算时间短。<br>
+RDBMS是数据库，存储数据量偏小一些，事务性强，适合做OLTP和OLAP业务，运算时间短。<br><br>
 
 对于Hive和传统RMBMS的区别，可以简单总结为下面的表格：<br>
-![](https://github.com/Drizzle-Zhang/practice/blob/master/big_data_basis/supp_Task6/Hive_RDBMS.png)
+![](https://github.com/Drizzle-Zhang/practice/blob/master/big_data_basis/supp_Task6/Hive_RDBMS.png)<br><br>
+
+**Reference:**<br>
+1. [HIVE与RDBMS的区别](https://blog.csdn.net/zx8167107/article/details/79114620)<br>
+2. [Hive 与 RDBMS的区别](https://blog.csdn.net/qq_43688472/article/details/86317428)<br>
+3. [Hive和传统数据库区别总结](https://blog.csdn.net/peter_changyb/article/details/81219460)<br>
+<br>
 
 
 
