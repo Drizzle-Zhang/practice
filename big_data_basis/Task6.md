@@ -221,13 +221,13 @@ Hive相关配置<br>
 # 数据库用户名
   <property>
     <name>javax.jdo.option.ConnectionUserName</name>
-    <value>zy</value>
+    <value>root</value>
   </property>
  
 # 数据库密码
    <property>
     <name>javax.jdo.option.ConnectionPassword</name>
-    <value>123456</value> #修改为你自己的mysql密码
+    <value>zy123456</value> #修改为你自己的mysql密码
   </property>
 
   <property>
@@ -236,12 +236,119 @@ Hive相关配置<br>
   </property>
 
 ```
+复制并更名hive-log4j2.properties.template为 hive-log4j2.properties文件：
+```
+[zy@node7 conf]$ cp hive-log4j2.properties.template hive-log4j2.properties
+[zy@node7 conf]$ vi hive-log4j2.properties
+```
+修改如下内容：
+```
+property.hive.log.dir = /local/zy/tools/apache-hive-2.1.1-bin/tmp/zy
+```
+复制并更名hive-env.sh.template为 hive-env.sh文件：
+```
+[zy@node7 ~]$ cd tools/apache-hive-2.1.1-bin/conf/
+[zy@node7 conf]$ cp hive-e
+hive-env.sh.template                  hive-exec-log4j2.properties.template
+[zy@node7 conf]$ cp hive-env.sh.template hive-env.sh
+[zy@node7 conf]$ vi hive-env.sh
+```
+修改如下内容
+```
+# Set HADOOP_HOME to point to a specific hadoop install directory
+# HADOOP_HOME=${bin}/../../hadoop
+export HADOOP_HOME=/local/zy/tools/hadoop-2.7.3     # hadoop安装目录
 
+# Hive Configuration Directory can be controlled by:
+export HIVE_CONF_DIR=/local/zy/tools/apache-hive-2.1.1-bin/conf       # hive配置文件目录
+
+# Folder containing extra ibraries required for hive compilation/execution can be controlled by:
+export HIVE_AUX_JARS_PATH=/local/zy/tools/apache-hive-2.1.1-bin/lib         # hive依赖jar包目录
+
+```
+接下来启动Hive<br>
+进入MySQL，创建Hive数据库
+```
+[zy@node7 ~]$ mysql -u root -p
+Enter password: 
+Welcome to the MySQL monitor.  Commands end with ; or \g.
+Your MySQL connection id is 6
+Server version: 5.7.27 MySQL Community Server (GPL)
+
+Copyright (c) 2000, 2019, Oracle and/or its affiliates. All rights reserved.
+
+Oracle is a registered trademark of Oracle Corporation and/or its
+affiliates. Other names may be trademarks of their respective
+owners.
+
+Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+
+mysql> create database hive;
+Query OK, 1 row affected (0.00 sec)
+
+```
+进入官网下载数据库驱动，在System选择栏里选Platform Independent，选择后缀tar.gz的包进行下载并解压，然后将里面的jar复制到$HIVE_HOME/lib，再进行初始化
+```
+[zy@node7 download]$ cp mysql-connector-java-8.0.17/*.jar ~/tools/apache-hive-2.1.1-bin/lib/
+[zy@node7 ~]$ schematool -dbType mysql -initSchema
+```
+会出现如下报错：
+```
+which: no hbase in (/usr/local/matlab/2014a/bin:/opt/scm/bin:/opt/apps/python/3.6.1/bin:/usr/local/bin:/usr/bin:/usr/local/sbin:/usr/sbin:/opt/ibutils/bin:/local/zy/tools/hadoop-2.7.3/bin:/local/zy/tools/hadoop-2.7.3/sbin:/usr/lib/jvm/java-1.8.0-openjdk-1.8.0.151-1.b12.el7_4.x86_64/jre/bin:/local/zy/tools/spark-2.1.1-bin-hadoop2.7/bin:/local/zy/tools/apache-hive-2.1.1-bin/bin:/local/zy/tools/anaconda3/bin:/local/zy/.local/bin:/local/zy/bin)
+SLF4J: Class path contains multiple SLF4J bindings.
+SLF4J: Found binding in [jar:file:/local/zy/tools/apache-hive-2.1.1-bin/lib/log4j-slf4j-impl-2.4.1.jar!/org/slf4j/impl/StaticLoggerBinder.class]
+SLF4J: Found binding in [jar:file:/local/zy/tools/hadoop-2.7.3/share/hadoop/common/lib/slf4j-log4j12-1.7.10.jar!/org/slf4j/impl/StaticLoggerBinder.class]
+SLF4J: See http://www.slf4j.org/codes.html#multiple_bindings for an explanation.
+SLF4J: Actual binding is of type [org.apache.logging.slf4j.Log4jLoggerFactory]
+Metastore connection URL:	 jdbc:mysql://node7:3306/hive?createDatabaseIfNotExist=true&characterEncoding=UTF-8
+Metastore Connection Driver :	 com.mysql.cj.jdbc.Driver
+Metastore connection User:	 zy
+org.apache.hadoop.hive.metastore.HiveMetaException: Failed to get schema version.
+Underlying cause: java.sql.SQLException : null,  message from server: "Host 'node7' is not allowed to connect to this MySQL server"
+SQL Error code: 1130
+Use --verbose for detailed stacktrace.
+*** schemaTool failed ***
+```
+服务器不允许远程连接，我们进入mysql进行以下修改：
+```
+mysql> use mysql
+Reading table information for completion of table and column names
+You can turn off this feature to get a quicker startup with -A
+
+Database changed
+mysql> update user set host = '%' where user='root';
+Query OK, 1 row affected (0.00 sec)
+Rows matched: 1  Changed: 1  Warnings: 0
+
+mysql> flush privileges;
+Query OK, 0 rows affected (0.00 sec) 
+
+```
+之后再次进行初始化，初始化成功
+```
+[zy@node7 ~]$ schematool -dbType mysql -initSchema
+which: no hbase in (/usr/local/matlab/2014a/bin:/opt/scm/bin:/opt/apps/python/3.6.1/bin:/usr/local/bin:/usr/bin:/usr/local/sbin:/usr/sbin:/opt/ibutils/bin:/local/zy/tools/hadoop-2.7.3/bin:/local/zy/tools/hadoop-2.7.3/sbin:/usr/lib/jvm/java-1.8.0-openjdk-1.8.0.151-1.b12.el7_4.x86_64/jre/bin:/local/zy/tools/spark-2.1.1-bin-hadoop2.7/bin:/local/zy/tools/apache-hive-2.1.1-bin/bin:/local/zy/tools/anaconda3/bin:/local/zy/.local/bin:/local/zy/bin)
+SLF4J: Class path contains multiple SLF4J bindings.
+SLF4J: Found binding in [jar:file:/local/zy/tools/apache-hive-2.1.1-bin/lib/log4j-slf4j-impl-2.4.1.jar!/org/slf4j/impl/StaticLoggerBinder.class]
+SLF4J: Found binding in [jar:file:/local/zy/tools/hadoop-2.7.3/share/hadoop/common/lib/slf4j-log4j12-1.7.10.jar!/org/slf4j/impl/StaticLoggerBinder.class]
+SLF4J: See http://www.slf4j.org/codes.html#multiple_bindings for an explanation.
+SLF4J: Actual binding is of type [org.apache.logging.slf4j.Log4jLoggerFactory]
+Metastore connection URL:	 jdbc:mysql://node7:3306/hive?createDatabaseIfNotExist=true&characterEncoding=UTF-8
+Metastore Connection Driver :	 com.mysql.cj.jdbc.Driver
+Metastore connection User:	 root
+Starting metastore schema initialization to 2.1.0
+Initialization script hive-schema-2.1.0.mysql.sql
+Initialization script completed
+schemaTool completed
+```
 
 
 **Reference:**<br>
 1. [CentOS 7 下使用yum安装MySQL5.7.20 最简单 图文详解](https://blog.csdn.net/z13615480737/article/details/78906598)<br>
-2. [centos7安装mysql5.7](https://blog.51cto.com/13941177/2176400)<br><br>
+2. [centos7安装mysql5.7](https://blog.51cto.com/13941177/2176400)<br>
+3. [CentOs7 Hadoop-3.0.3 搭建Hive-2.3.5](https://blog.csdn.net/zhouzhiwengang/article/details/94576029)<br>
+4. [https://blog.csdn.net/qq_39315740/article/details/98626518](https://blog.csdn.net/qq_39315740/article/details/98626518)<br>
+<br>
 
 
 
