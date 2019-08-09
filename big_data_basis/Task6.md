@@ -398,4 +398,65 @@ RDBMS是数据库，存储数据量偏小一些，事务性强，适合做OLTP�
 <br>
 
 
+## 4. Hive原理及架构图
+
+### Hive工作原理
+![](https://github.com/Drizzle-Zhang/practice/blob/master/big_data_basis/supp_Task6/Hive_Theory.jpg)<br>
+流程大致步骤为：<br>
+
+1. 用户提交查询等任务给Driver。<br>
+
+2. 编译器获得该用户的任务Plan。<br>
+
+3. 编译器Compiler根据用户任务去MetaStore中获取需要的Hive的元数据信息。<br>
+
+4. 编译器Compiler得到元数据信息，对任务进行编译，先将HiveQL转换为抽象语法树，然后将抽象语法树转换成查询块，将查询块转化为逻辑的查询计划，重写逻辑查询计划，将逻辑计划转化为物理的计划（MapReduce）, 最后选择最佳的策略。<br>
+
+5. 将最终的计划提交给Driver。<br>
+
+6. Driver将计划Plan转交给ExecutionEngine去执行，获取元数据信息，提交给JobTracker或者SourceManager执行该任务，任务会直接读取HDFS中文件进行相应的操作。<br>
+
+7. 获取执行的结果。<br>
+
+8. 取得并返回执行结果。<br><br>
+
+创建表时：<br>
+
+解析用户提交的Hive语句-->对其进行解析-->分解为表、字段、分区等Hive对象。根据解析到的信息构建对应的表、字段、分区等对象，从SEQUENCE_TABLE中获取构建对象的最新的ID，与构建对象信息（名称、类型等等）一同通过DAO方法写入元数据库的表中，成功后将SEQUENCE_TABLE中对应的最新ID+5.实际上常见的RDBMS都是通过这种方法进行组织的，其系统表中和Hive元数据一样显示了这些ID信息。通过这些元数据可以很容易的读取到数据。<br>
+<br>
+
+### Hive架构
+
+![](https://github.com/Drizzle-Zhang/practice/blob/master/big_data_basis/supp_Task6/Hive_structure.png)<br>
+
+在上图中，Hive通过用户提供的一系列交互接口,接收到用户的指令(SQL),使用自己的Driver,结合元数据(MetaStore),将这些指令翻译成MapReduce,提交到Hadoop中执行,最后,将执行返回的结果输出到用户交互接口<br>
+
+* 用户接口:Client CLI(hive shell 命令行),JDBC/ODBC(java访问hive),WEBUI(浏览器访问hive)<br>
+* 元数据:Metastore:元数据包括:表名,表所属数据库(默认是default) ,表的拥有者,列/分区字段,表的类型(是否是外部表),表的数据所在目录等；默认存储在自带的derby数据库中,推荐使用MySQL存储Metastore<br>
+* Hadoop 使用HDFS进行存储,使用MapReduce进行计算<br>
+* 驱动器:Driver<br>
+(1)解析器(SQL Parser):将SQL字符转换成抽象语法树AST,这一步一般使用都是第三方工具库完成,比如antlr,对AST进行语法分析,比如表是否存在,字段是否存在,SQL语句是否有误<br>
+(2)编译器(Physical Plan):将AST编译生成逻辑执行计划<br>
+(3)优化器(Query Optimizer):对逻辑执行计划进行优化<br>
+(4)执行器(Execution):把逻辑执行计划转换成可以运行的物理计划,对于Hive来说,就是MR/Spark<br>
+<br>
+
+
+**Reference:**<br>
+1. [Hive技术原理解析](https://blog.csdn.net/qq_36864672/article/details/78648248)<br>
+2. [Hive架构原理](https://blog.csdn.net/wwwzydcom/article/details/84038048)<br>
+3. [一文弄懂Hive基本架构和原理](https://blog.csdn.net/oTengYue/article/details/91129850)<br>
+<br>
+
+
+
+## 5. HQL的基本操作（Hive中的SQL）
+
+
+
+
+
+
+
+
 
