@@ -452,6 +452,20 @@ RDBMS是数据库，存储数据量偏小一些，事务性强，适合做OLTP�
 
 ## 5. HQL的基本操作（Hive中的SQL）
 
+**Reference:**<br>
+1. [hive 的HQL基本操作](https://blog.csdn.net/lljjyy001/article/details/80285314)<br>
+2. [hive的基础操作及HQL的基本使用](https://www.2cto.com/net/201808/766091.html)<br>
+<br>
+
+## 6. Hive内部表/外部表/分区
+
+**Reference:**<br>
+1. [hive内部表、外部表、分区表、视图 ](https://www.cnblogs.com/linn/p/6182624.html)<br>
+2. [Hive(7):Hive四大表类型内部表、外部表、分区表和桶表](https://blog.csdn.net/u010886217/article/details/83796151)<br>
+3. [Hive内部表、外部表、分区表以及外部分区表创建以及导入数据实例讲解](https://blog.csdn.net/a2011480169/article/details/79000752)<br>
+4. [Hive学习之路 （一）Hive初识 ](https://www.cnblogs.com/qingyunzong/p/8707885.html)<br>
+<br>
+
 
 
 
