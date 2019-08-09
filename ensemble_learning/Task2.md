@@ -11,22 +11,41 @@
 
 ## 2. 负梯度拟合
 ![](https://github.com/Drizzle-Zhang/practice/blob/master/ensemble_learning/Supp_Task2/futidunihe.png)<br>
+**Reference:**<br>
+1. [带你搞懂GBDT算法原理](https://blog.csdn.net/akirameiao/article/details/80009155)<br>
+<br>
 
 ## 3. 损失函数
 ![](https://github.com/Drizzle-Zhang/practice/blob/master/ensemble_learning/Supp_Task2/loss_function.png)<br>
+**Reference:**<br>
+1. [梯度提升树(GBDT)原理小结 ](https://www.cnblogs.com/pinard/p/6140514.html)<br>
+<br>
 
 ## 4. 回归
 ![](https://github.com/Drizzle-Zhang/practice/blob/master/ensemble_learning/Supp_Task2/regression.png)<br>
+**Reference:**<br>
+1. [带你搞懂GBDT算法原理](https://blog.csdn.net/akirameiao/article/details/80009155)<br>
+<br>
 
 ## 5. 二分类，多分类
 ![](https://github.com/Drizzle-Zhang/practice/blob/master/ensemble_learning/Supp_Task2/double_classification.png)<br>
 ![](https://github.com/Drizzle-Zhang/practice/blob/master/ensemble_learning/Supp_Task2/multi_classification.png)<br>
+**Reference:**<br>
+1. [带你搞懂GBDT算法原理](https://blog.csdn.net/akirameiao/article/details/80009155)<br>
+2. [梯度提升树(GBDT)原理小结 ](https://www.cnblogs.com/pinard/p/6140514.html)<br>
+<br>
 
 ## 6. 正则化
 ![](https://github.com/Drizzle-Zhang/practice/blob/master/ensemble_learning/Supp_Task2/normalization.png)<br>
+**Reference:**<br>
+1. [梯度提升树(GBDT)原理小结 ](https://www.cnblogs.com/pinard/p/6140514.html)<br>
+<br>
 
 ## 7. 优缺点
 ![](https://github.com/Drizzle-Zhang/practice/blob/master/ensemble_learning/Supp_Task2/advantages.png)<br>
+**Reference:**<br>
+1. [带你搞懂GBDT算法原理](https://blog.csdn.net/akirameiao/article/details/80009155)<br>
+<br>
 
 ## 8. sklearn参数
 1. [sklearn梯度提升树(GBDT)调参小结](https://blog.csdn.net/lynn_001/article/details/85339034)<br>
@@ -45,5 +64,15 @@ GBDT近些年因为被用于搜索引擎排序(RankNet)的机器学习模型而�
 
 **Reference:**<br>
 1. [GBDT 入门教程之原理、所解决的问题、应用场景讲解](https://blog.csdn.net/molu_chase/article/details/78111148)<br>
+<br>
+
+其他参考资料：<br>
+1. [机器学习算法GBDT的面试要点总结-上篇 ](https://www.cnblogs.com/ModifyRong/p/7744987.html)<br>
+2. [梯度提升树（GBDT）原理 ](http://blog.sina.com.cn/s/blog_62970c250102xg5c.html)<br>
+3. [GBDT原理解析：为什么说GBDT是拟合残差的梯度下降算法](https://blog.csdn.net/nickzzzhu/article/details/81539138)
+<br>
+
+
+
 
 
