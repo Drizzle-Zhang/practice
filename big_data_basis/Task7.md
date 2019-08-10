@@ -37,7 +37,11 @@ ctr = contentData.map(lambda x:x.split('\t')).map(lambda line:(line[0], len(line
 
 
 
-
+**Reference:**<br>
+1. [【Spark机器学习速成宝典】模型篇03线性回归【LR】（Python版） ](https://www.cnblogs.com/itmorn/p/8023396.html)<br>
+2. [python spark 简单的gbdt, LR模型的使用示例](https://blog.csdn.net/qq_36480160/article/details/82013975)<br>
+3. [Spark 2.1.0 入门：特征抽取 — TF-IDF(Python版)](http://dblab.xmu.edu.cn/blog/1766-2/)<br>
+<br>
 
 
 
