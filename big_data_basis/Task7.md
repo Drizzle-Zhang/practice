@@ -33,8 +33,12 @@ ctr = contentData.map(lambda x:x.split('\t')).map(lambda line:(line[0], len(line
 
 
 ## 3. 使用Spark分析Amazon DataSet(实现 Spark LR、Spark TFIDF)
+[数据来源](http://jmcauley.ucsd.edu/data/amazon/)<br>
+
+```Python
 
 
+```
 
 
 **Reference:**<br>
