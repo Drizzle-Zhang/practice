@@ -41,6 +41,10 @@ ctr = contentData.map(lambda x:x.split('\t')).map(lambda line:(line[0], len(line
 1. [【Spark机器学习速成宝典】模型篇03线性回归【LR】（Python版） ](https://www.cnblogs.com/itmorn/p/8023396.html)<br>
 2. [python spark 简单的gbdt, LR模型的使用示例](https://blog.csdn.net/qq_36480160/article/details/82013975)<br>
 3. [Spark 2.1.0 入门：特征抽取 — TF-IDF(Python版)](http://dblab.xmu.edu.cn/blog/1766-2/)<br>
+4. [PySpark TF-IDF计算（2）](https://blog.csdn.net/macanv/article/details/87731785)<br>
+5. [【干货】Python大数据处理库PySpark实战——使用PySpark处理文本多分类问题](https://cloud.tencent.com/developer/article/1096712)<br>
+6. [利用Spark计算TF-IDF ](https://fuhailin.github.io/Calculating-TF-IDF-With-Apache-Spark/)<br>
+
 <br>
 
 
