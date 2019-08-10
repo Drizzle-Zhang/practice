@@ -21,8 +21,7 @@ uid     content_list    content_id
 contentData = sc.textFile("file:///local/zy/download/content_list_id.txt")
 
 # 计算每个uid的CTR
-splitData = contentData.flatMap(lambda line:line.split("\n"))
-ctr = splitData.map(lambda x:x.split('\t')).map(lambda line:(line[0], len(line[1].split(','))/len(line[2].split(','))))
+ctr = contentData.map(lambda x:x.split('\t')).map(lambda line:(line[0], len(line[1].split(','))/len(line[2].split(','))))
 
 # 计算结果如下
 >>> ctr.take(10)
@@ -34,5 +33,17 @@ ctr = splitData.map(lambda x:x.split('\t')).map(lambda line:(line[0], len(line[1
 
 
 ## 3. 使用Spark分析Amazon DataSet(实现 Spark LR、Spark TFIDF)
+
+
+
+
+
+
+
+
+
+
+
+
 
 
