@@ -33,11 +33,78 @@ ctr = contentData.map(lambda x:x.split('\t')).map(lambda line:(line[0], len(line
 
 
 ## 3. 使用Spark分析Amazon DataSet(实现 Spark LR、Spark TFIDF)
-[数据来源](http://jmcauley.ucsd.edu/data/amazon/)<br>
-
+[数据来源](http://jmcauley.ucsd.edu/data/amazon/)：<br>
+下载files里面的"Home and Kitchen - 5-core"数据集<br>
+**接下来先计算TF-IDF**
+读取json数据
 ```Python
+from pyspark.sql import SQLContext
+sqlContext = SQLContext(sc)
+home_kitchen = sqlContext.read.json("file:///local/zy/download/reviews_Home_and_Kitchen_5.json")
+```
+查看数据结构
+```
+>>> home_kitchen.printSchema()
+root
+ |-- asin: string (nullable = true)
+ |-- helpful: array (nullable = true)
+ |    |-- element: long (containsNull = true)
+ |-- overall: double (nullable = true)
+ |-- reviewText: string (nullable = true)
+ |-- reviewTime: string (nullable = true)
+ |-- reviewerID: string (nullable = true)
+ |-- reviewerName: string (nullable = true)
+ |-- summary: string (nullable = true)
+ |-- unixReviewTime: long (nullable = true)
 
+>>> home_kitchen.first()
+Row(asin='0615391206', helpful=[0, 0], overall=5.0, reviewText='My daughter wanted this book and the price on Amazon was the best.  She has already tried one recipe a day after receiving the book.  She seems happy with it.', reviewTime='10 19, 2013', reviewerID='APYOBQE6M18AA', reviewerName='Martin Schwartz', summary='Best Price', unixReviewTime=1382140800)
 
+```
+我们只需要用text数据
+```Python
+>>> df = home_kitchen.select('reviewText')
+```
+加上一列id，以便统计评论个数：
+```Python
+from pyspark.sql import functions as F
+df = df.withColumn("doc_id", F.monotonically_increasing_id())
+```
+使用空格进行分词
+```Python
+df = df.withColumn('keys',F.split('reviewText', " ")).drop('reviewText')
+```
+然后把分好的词explode一下，这样每个评论及其每个单词都会形成一行
+```Python
+NUM_doc = df.count()
+# One hot words
+df = df.select('*', F.explode('keys').alias('token'))
+```
+计算TF，TF是针对一篇文章而言的，是一篇文章中的单词频数/单词总数，这里的一篇文章就是一条评论。
+```Python
+# Calculate TF
+TF = df.groupBy("doc_id").agg(F.count("token").alias("doc_len")) \
+    .join(df.groupBy("doc_id", "token")
+          .agg(F.count("keys").alias("word_count")), ['doc_id']) \
+    .withColumn("tf", F.col("word_count") / F.col("doc_len")) \
+    .drop("doc_len", "word_count")
+TF.cache()
+```
+这里以评论id分组，并计算每个组内单词的个数，也就是每个评论有多少单词（doc_len），然后和另一个df2以字段“doc_id”内连接，df2以评论id和单词分组，计算组内分词集合的个数，也就是每个词出现在多少集合中（word_count）。最后再添加一列tf值，即单词在文档中出现的次数/文档总词数。<br><br>
+
+计算IDF，IDF是逆文档频率，表示一个单词在语料库中出现的频率，也就是一个单词在多少篇文章中出现了。
+```Python
+# Calculate IDF
+IDF = df.groupBy("token").agg(F.countDistinct("doc_id").alias("df"))
+IDF = IDF.select('*', (F.log(NUM_doc / (IDF['df'] + 1))).alias('idf'))
+IDF.cache()
+```
+这里以每个单词分组，计算单词在不同评论中出现的次数，然后再用log(训练语料的总文档数/(出现词语x的文档数+1)）计算出idf值。<br><br>
+
+计算TF-IDF，两个df以单词为字段join，得到TF-IDF值。
+```Python
+# Calculate TF-IDF
+TFIDF = TF.join(IDF, ['token']).withColumn('tf-idf', F.col('tf') * F.col('idf'))
 ```
 
 
