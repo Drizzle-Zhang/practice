@@ -34,8 +34,8 @@ ctr = contentData.map(lambda x:x.split('\t')).map(lambda line:(line[0], len(line
 
 ## 3. 使用Spark分析Amazon DataSet(实现 Spark LR、Spark TFIDF)
 [数据来源](http://jmcauley.ucsd.edu/data/amazon/)：<br>
-下载files里面的"Home and Kitchen - 5-core"数据集<br>
-**接下来先计算TF-IDF**
+下载files里面的"Home and Kitchen - 5-core"数据集<br><br>
+**接下来先计算TF-IDF**<br>
 读取json数据
 ```Python
 from pyspark.sql import SQLContext
