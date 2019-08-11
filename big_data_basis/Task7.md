@@ -30,7 +30,9 @@ ctr = contentData.map(lambda x:x.split('\t')).map(lambda line:(line[0], len(line
 ```
 
 ## 2. 【选做】 使用Spark实现ALS矩阵分解算法
+movielen 数据集：http://files.grouplens.org/datasets/movielens/ml-100k.zip
 
+ [基于ALS矩阵分解算法的Spark推荐引擎实现](https://www.cnblogs.com/muchen/p/6882465.html)
 
 ## 3. 使用Spark分析Amazon DataSet(实现 Spark LR、Spark TFIDF)
 [数据来源](http://jmcauley.ucsd.edu/data/amazon/)：<br>
