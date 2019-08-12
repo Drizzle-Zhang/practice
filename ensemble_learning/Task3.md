@@ -32,14 +32,23 @@ XGBoost的集成思想就是加法模型的思想，如下图所示：<br>
 ![](https://github.com/Drizzle-Zhang/practice/blob/master/ensemble_learning/Supp_Task3/loss_function3.png)<br>
 ![](https://github.com/Drizzle-Zhang/practice/blob/master/ensemble_learning/Supp_Task3/loss_function4.png)<br>
 
+参考资料：<br>
+1. [XGB简介](https://www.jianshu.com/p/3d5a4dcb3ae4)<br>
+2. [机器学习算法梳理—XGB](https://blog.csdn.net/mingxiaod/article/details/86063153)<br>
+3. [XGB算法梳理](https://blog.csdn.net/wangrongrongwq/article/details/86755915#2.%E7%AE%97%E6%B3%95%E5%8E%9F%E7%90%86)<br>
+<br>
 
 
+## 3. 分裂结点算法
+### 树结构的学习
+![](https://github.com/Drizzle-Zhang/practice/blob/master/ensemble_learning/Supp_Task3/split1.png)<br>
 
+### 贪心算法
+![](https://github.com/Drizzle-Zhang/practice/blob/master/ensemble_learning/Supp_Task3/split2.png)<br>
 
+### 近似算法
+![](https://github.com/Drizzle-Zhang/practice/blob/master/ensemble_learning/Supp_Task3/split3.png)<br>
 
-
-
-
-
+## 4. 正则化
 
 
