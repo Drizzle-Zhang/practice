@@ -59,6 +59,15 @@ XGBoost的集成思想就是加法模型的思想，如下图所示：<br>
 在数据量很大时，贪心算法计算速度很慢，而且很占内存，所以引入了近似算法。<br>
 <br>
 ![](https://github.com/Drizzle-Zhang/practice/blob/master/ensemble_learning/Supp_Task3/split3.png)<br>
+<br>
+
+参考资料：<br>
+1. [XGB简介](https://www.jianshu.com/p/3d5a4dcb3ae4)<br>
+2. [机器学习算法梳理—XGB](https://blog.csdn.net/mingxiaod/article/details/86063153)<br>
+3. [XGB算法梳理](https://blog.csdn.net/wangrongrongwq/article/details/86755915#2.%E7%AE%97%E6%B3%95%E5%8E%9F%E7%90%86)<br>
+4. [陈天奇论文](https://github.com/Drizzle-Zhang/practice/blob/master/ensemble_learning/Supp_Task3/XGBoost.pdf)<br>
+<br>
+
 
 ## 4. 正则化以及防止过拟合的方法
 上面介绍算法原理部分已经指出损失函数中带有正则项，但是XGB中还有一些防止过拟合的方法。<br>
