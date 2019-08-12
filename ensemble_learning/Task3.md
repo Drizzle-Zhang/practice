@@ -56,6 +56,8 @@ XGBoost的集成思想就是加法模型的思想，如下图所示：<br>
 ![](https://github.com/Drizzle-Zhang/practice/blob/master/ensemble_learning/Supp_Task3/split2.png)<br>
 
 ### 近似算法
+在数据量很大时，贪心算法计算速度很慢，而且很占内存，所以引入了近似算法。<br>
+<br>
 ![](https://github.com/Drizzle-Zhang/practice/blob/master/ensemble_learning/Supp_Task3/split3.png)<br>
 
 ## 4. 正则化以及防止过拟合的方法
