@@ -44,7 +44,7 @@ XGBoost的集成思想就是加法模型的思想，如下图所示：<br>
 ### 树结构的学习
 ![](https://github.com/Drizzle-Zhang/practice/blob/master/ensemble_learning/Supp_Task3/split1.png)<br>
 该公式的作用类似于基尼系数或是信息增益，用来确定节点是否应该分裂<br>
-<script type="text/javascript" async src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML"> </script>
+![](http://latex.codecogs.com/gif.latex?\$$Obj_{split}=-\frac{1}{2}[\frac{G^{2}_{L}}{H^{2}_{R}+\lambda }+\frac{G^{2}_{R}}{H^{2}_{R}+\lambda }]+\gamma T_{split}$$)<br>
 
 ### 贪心算法
 ![](https://github.com/Drizzle-Zhang/practice/blob/master/ensemble_learning/Supp_Task3/split2.png)<br>
