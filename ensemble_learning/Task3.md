@@ -27,6 +27,7 @@ XGBoost的集成思想就是加法模型的思想，如下图所示：<br>
 为了学习模型中的函数集合，我们最小化如下的正则化过的目标函数：<br>
 ![](https://github.com/Drizzle-Zhang/practice/blob/master/ensemble_learning/Supp_Task3/theory5.png)<br>
 在这里，l是一个可微的凸损失函数，用来度量预测值和真实值之间的差距。第二项ohm惩罚模型的复杂度。这个附加的正则项有助于平滑最终的学习权重以防止过拟合。<br>
+接下来的推导过程，实质上是对某一轮迭代中，其中的某一棵树进行讨论的：<br>
 ![](https://github.com/Drizzle-Zhang/practice/blob/master/ensemble_learning/Supp_Task3/loss_function1.png)<br>
 ![](https://github.com/Drizzle-Zhang/practice/blob/master/ensemble_learning/Supp_Task3/loss_function2.png)<br>
 ![](https://github.com/Drizzle-Zhang/practice/blob/master/ensemble_learning/Supp_Task3/loss_function3.png)<br>
@@ -42,6 +43,8 @@ XGBoost的集成思想就是加法模型的思想，如下图所示：<br>
 ## 3. 分裂结点算法
 ### 树结构的学习
 ![](https://github.com/Drizzle-Zhang/practice/blob/master/ensemble_learning/Supp_Task3/split1.png)<br>
+该公式的作用类似于基尼系数或是信息增益，用来确定节点是否应该分裂<br>
+<script type="text/javascript" async src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML"> </script>
 
 ### 贪心算法
 ![](https://github.com/Drizzle-Zhang/practice/blob/master/ensemble_learning/Supp_Task3/split2.png)<br>
