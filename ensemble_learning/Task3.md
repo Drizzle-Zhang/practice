@@ -1,5 +1,6 @@
 # Task3
 
+
 ## 1. 算法原理
 ### CART回归树
 ![](https://github.com/Drizzle-Zhang/practice/blob/master/ensemble_learning/Supp_Task3/cart1.png)<br>
@@ -44,7 +45,9 @@ XGBoost的集成思想就是加法模型的思想，如下图所示：<br>
 ### 树结构的学习
 ![](https://github.com/Drizzle-Zhang/practice/blob/master/ensemble_learning/Supp_Task3/split1.png)<br>
 该公式的作用类似于基尼系数或是信息增益，用来确定节点是否应该分裂<br>
-![](http://latex.codecogs.com/gif.latex?\$$Obj_{split}=-\frac{1}{2}[\frac{G^{2}_{L}}{H^{2}_{R}+\lambda }+\frac{G^{2}_{R}}{H^{2}_{R}+\lambda }]+\gamma T_{split}$$)<br>
+得到该公式的推导过程如下：<br>
+![](http://latex.codecogs.com/gif.latex?\$$Obj_{split}=-\frac{1}{2}[\sum^{T_{split}-2}_{j=1}{\frac{G^{2}_{j}}{H^{2}_{j}+\lambda}}+\frac{G^{2}_{L}}{H^{2}_{R}+\lambda}+\frac{G^{2}_{R}}{H^{2}_{R}+\lambda}]+T_{split}\cdot\gamma$$)<br>
+![](http://latex.codecogs.com/gif.latex?\$$Obj_{nosplit}=-\frac{1}{2}[\sum^{T_{nosplit}-1}_{j=1}{\frac{G^{2}_{j}}{H^{2}_{j}+\lambda}}+\frac{(G_{L}+G_{R})^{2}}{H_{L}+H_{R}+\lambda}]+T_{nosplit}\cdot\gamma$$)<br>
 
 ### 贪心算法
 ![](https://github.com/Drizzle-Zhang/practice/blob/master/ensemble_learning/Supp_Task3/split2.png)<br>
