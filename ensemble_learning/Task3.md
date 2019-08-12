@@ -43,13 +43,16 @@ XGBoost的集成思想就是加法模型的思想，如下图所示：<br>
 
 ## 3. 分裂结点算法
 ### 树结构的学习
+理论上来说，需要对所有可能的树结构q进行枚举，选出最优的q，但是这个计算量是不可承受的。因此，可以使用贪心算法，从一个只有一个叶子的树开始，往树上迭代进行分支，这就用得上下面的公式了：<br>
 ![](https://github.com/Drizzle-Zhang/practice/blob/master/ensemble_learning/Supp_Task3/split1.png)<br>
 该公式的作用类似于基尼系数或是信息增益，用来确定节点是否应该分裂<br>
 得到该公式的推导过程如下：<br>
 ![](http://latex.codecogs.com/gif.latex?\$$Obj_{split}=-\frac{1}{2}[\sum^{T_{split}-2}_{j=1}{\frac{G^{2}_{j}}{H^{2}_{j}+\lambda}}+\frac{G^{2}_{L}}{H^{2}_{R}+\lambda}+\frac{G^{2}_{R}}{H^{2}_{R}+\lambda}]+T_{split}\cdot\gamma$$)<br>
 ![](http://latex.codecogs.com/gif.latex?\$$Obj_{nosplit}=-\frac{1}{2}[\sum^{T_{nosplit}-1}_{j=1}{\frac{G^{2}_{j}}{H^{2}_{j}+\lambda}}+\frac{(G_{L}+G_{R})^{2}}{H_{L}+H_{R}+\lambda}]+T_{nosplit}\cdot\gamma$$)<br>
+![](http://latex.codecogs.com/gif.latex?\$$Gain=Obj_{nosplit}-Obj_{split}=\frac{1}{2}[\frac{G^{2}_{L}}{H^{2}_{R}+\lambda}+\frac{G^{2}_{R}}{H^{2}_{R}+\lambda}-\frac{(G_{L}+G_{R})^{2}}{H_{L}+H_{R}+\lambda}]-\gamma$$)<br>
 
 ### 贪心算法
+贪心算法就是对于每一棵树，在每次进行分支时，使用上面计算Gain的公式，对所有特征计算都一遍，选出最合适的分割点。某一次节点分裂的计算过程如下：<br>
 ![](https://github.com/Drizzle-Zhang/practice/blob/master/ensemble_learning/Supp_Task3/split2.png)<br>
 
 ### 近似算法
