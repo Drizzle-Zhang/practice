@@ -20,7 +20,7 @@ XGBoost的集成思想就是加法模型的思想，如下图所示：<br>
 给定一个样本，我们可以用这些树中的决策规则（q）去把该样本分类到相应的叶子上，然后加和这些数上所有对应叶子的分数得到最终的计算结果。<br>
 
 参考资料：<br>
-1. [陈天奇论文](https://arxiv.org/pdf/1603.02754v1.pdf)<br>
+1. [陈天奇论文](https://github.com/Drizzle-Zhang/practice/blob/master/ensemble_learning/Supp_Task3/XGBoost.pdf)<br>
 <br>
 
 
