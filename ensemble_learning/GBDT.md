@@ -10,39 +10,39 @@
 
 
 ## 2. 负梯度拟合
-![](https://github.com/Drizzle-Zhang/practice/blob/master/ensemble_learning/Supp_Task2/futidunihe.png)<br>
+![](https://github.com/Drizzle-Zhang/practice/blob/master/ensemble_learning/Supp_GBDT/futidunihe.png)<br>
 **Reference:**<br>
 1. [带你搞懂GBDT算法原理](https://blog.csdn.net/akirameiao/article/details/80009155)<br>
 <br>
 
 ## 3. 损失函数
-![](https://github.com/Drizzle-Zhang/practice/blob/master/ensemble_learning/Supp_Task2/loss_function.png)<br>
+![](https://github.com/Drizzle-Zhang/practice/blob/master/ensemble_learning/Supp_GBDT/loss_function.png)<br>
 **Reference:**<br>
 1. [梯度提升树(GBDT)原理小结 ](https://www.cnblogs.com/pinard/p/6140514.html)<br>
 <br>
 
 ## 4. 回归
-![](https://github.com/Drizzle-Zhang/practice/blob/master/ensemble_learning/Supp_Task2/regression.png)<br>
+![](https://github.com/Drizzle-Zhang/practice/blob/master/ensemble_learning/Supp_GBDT/regression.png)<br>
 **Reference:**<br>
 1. [带你搞懂GBDT算法原理](https://blog.csdn.net/akirameiao/article/details/80009155)<br>
 <br>
 
 ## 5. 二分类，多分类
-![](https://github.com/Drizzle-Zhang/practice/blob/master/ensemble_learning/Supp_Task2/double_classification.png)<br>
-![](https://github.com/Drizzle-Zhang/practice/blob/master/ensemble_learning/Supp_Task2/multi_classification.png)<br>
+![](https://github.com/Drizzle-Zhang/practice/blob/master/ensemble_learning/Supp_GBDT/double_classification.png)<br>
+![](https://github.com/Drizzle-Zhang/practice/blob/master/ensemble_learning/Supp_GBDT/multi_classification.png)<br>
 **Reference:**<br>
 1. [带你搞懂GBDT算法原理](https://blog.csdn.net/akirameiao/article/details/80009155)<br>
 2. [梯度提升树(GBDT)原理小结 ](https://www.cnblogs.com/pinard/p/6140514.html)<br>
 <br>
 
 ## 6. 正则化
-![](https://github.com/Drizzle-Zhang/practice/blob/master/ensemble_learning/Supp_Task2/normalization.png)<br>
+![](https://github.com/Drizzle-Zhang/practice/blob/master/ensemble_learning/Supp_GBDT/normalization.png)<br>
 **Reference:**<br>
 1. [梯度提升树(GBDT)原理小结 ](https://www.cnblogs.com/pinard/p/6140514.html)<br>
 <br>
 
 ## 7. 优缺点
-![](https://github.com/Drizzle-Zhang/practice/blob/master/ensemble_learning/Supp_Task2/advantages.png)<br>
+![](https://github.com/Drizzle-Zhang/practice/blob/master/ensemble_learning/Supp_GBDT/advantages.png)<br>
 **Reference:**<br>
 1. [带你搞懂GBDT算法原理](https://blog.csdn.net/akirameiao/article/details/80009155)<br>
 <br>
