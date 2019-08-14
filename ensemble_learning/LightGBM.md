@@ -66,12 +66,85 @@ leaf-wise是一种更为高效的策略，每次从当前所有叶子中，找�
 
 ## 5. 特征并行和数据并行
 
+### 5.1 特征并行
+特征并行的主要思想是：不同机器在不同的特征集合上分别寻找最优的分割点，然后再机器间同步最优的分割点，示意图如下：<br>
+![](https://github.com/Drizzle-Zhang/practice/blob/master/ensemble_learning/Supp_LightGBM/feature_para.png)<br>
+<br>
+传统算法中的特征并行，主要是体现在找到最好的分割点，其步骤为：<br>
+1.垂直分区数据（不同的线程具有不同的数据集）；<br>
+2.在本地数据集上找到最佳分割点，包括特征，阈值；<br>
+3.再进行各个划分的通信整合并得到最佳划分；<br>
+4.以最佳划分方法对数据进行划分，并将数据划分结果传递给其他线程；<br>
+5.其他线程对接受到的数据进一步划分；<br><br>
+传统特征并行的缺点：<br>
+计算成本较大，传统特征并行没有实现得到"split"（时间复杂度为“O（训练样本的个数)"）的加速。当数据量很大的时候，难以加速；<br>
+需要对划分的结果进行通信整合，其额外的时间复杂度约为 “O（训练样本的个数/8）”（一个数据一个字节）<br><br>
+
+由于特征并行在训练样本的个数大的时候不能很好地加速，LightGBM做了以下优化：不是垂直分割数据，而是每个线程都拥有完整的全部数据。因此，因此最优的特征分裂结果不需要传输到其他线程，只需要将最优特征以及分裂点告诉其他线程，随后再本地进行处理。实际上这是一种牺牲空间换取时间的做法。<br><br>
+
+处理过程如下：<br>
+1.每个worker在基于局部的特征集合找到最优分裂特征。<br>
+2.worker间传输最优分裂信息，并得到全局最优分裂信息。<br>
+3.每个worker基于全局最优分裂信息，在本地进行数据分裂。<br><br>
+
+### 5.2 数据并行
+数据并行的思路如下图所示：<br>
+![](https://github.com/Drizzle-Zhang/practice/blob/master/ensemble_learning/Supp_LightGBM/data_para.png)<br>
+传统算法数据并行旨在并行化整个决策学习。数据并行的过程是：<br>
+1、水平划分数据；<br>
+2、线程以本地数据构建本地直方图；<br>
+3、将本地直方图整合成全局直方图；<br>
+4、在全局直方图中寻找最佳划分，然后执行此划分；<br><br>
+传统数据并行的缺点：通信成本高。如果使用点对点通信算法，则一台机器的通信成本约为O(#machine * #feature * #bin)。如果使用聚合通信算法（例如“All Reduce”），通信成本约为O(2 * #feature * #bin)。<br><br>
+
+LightGBM中通过下面方法来降低数据并行的通信成本：<br>
+1、不同于“整合所有本地直方图以形成全局直方图”的方式，LightGBM 使用分散规约(Reduce scatter)的方式对不同线程的不同特征（不重叠的）进行整合。 然后线程从本地整合直方图中寻找最佳划分并同步到全局的最佳划分中；<br>
+2、LightGBM通过直方图的减法加速训练。 基于此，我们可以进行单叶子节点的直方图通讯，并且在相邻直方图上作减法；<br><br>
+通过上述方法，LightGBM 将数据并行中的通讯开销减少到O(0.5 * #feature * #bin)。<br><br>
+
+### 5.3 投票并行
+基于投票机制的并行算法，是在每个worker中选出top k个分裂特征，然后将每个worker选出的k个特征进行汇总，并选出全局分裂特征，进行数据分裂。有理论证明，这种voting parallel以很大的概率选出实际最优的特征，因此不用担心top k的问题，原理图如下：
+![](https://github.com/Drizzle-Zhang/practice/blob/master/ensemble_learning/Supp_LightGBM/vote_para.png)<br>
+
+
+参考资料：<br>
+1. [高级算法梳理之LightGBM](https://blog.csdn.net/sun_xiao_kai/article/details/90377282)<br>
+2. [LightGBM算法梳理](https://blog.csdn.net/qq_32577043/article/details/86215754#levelwise_37)<br>
+<br>
+
+
+## 6. 顺序访问梯度
 
 参考资料：<br>
 1. [机器学习算法梳理-LightGBM](https://blog.csdn.net/mingxiaod/article/details/86233309)<br>
 2. [LightGBM算法总结](https://blog.csdn.net/weixin_39807102/article/details/81912566)<br>
 3. [XGB算法梳理](https://blog.csdn.net/wangrongrongwq/article/details/86755915#2.%E7%AE%97%E6%B3%95%E5%8E%9F%E7%90%86)<br>
 <br>
+
+## 7. 支持类别特征
+
+参考资料：<br>
+1. [机器学习算法梳理-LightGBM](https://blog.csdn.net/mingxiaod/article/details/86233309)<br>
+2. [LightGBM算法总结](https://blog.csdn.net/weixin_39807102/article/details/81912566)<br>
+3. [XGB算法梳理](https://blog.csdn.net/wangrongrongwq/article/details/86755915#2.%E7%AE%97%E6%B3%95%E5%8E%9F%E7%90%86)<br>
+<br>
+
+## 8. sklearn参数
+
+参考资料：<br>
+1. [机器学习算法梳理-LightGBM](https://blog.csdn.net/mingxiaod/article/details/86233309)<br>
+2. [LightGBM算法总结](https://blog.csdn.net/weixin_39807102/article/details/81912566)<br>
+3. [XGB算法梳理](https://blog.csdn.net/wangrongrongwq/article/details/86755915#2.%E7%AE%97%E6%B3%95%E5%8E%9F%E7%90%86)<br>
+<br>
+
+## 9. CatBoost
+
+参考资料：<br>
+1. [机器学习算法梳理-LightGBM](https://blog.csdn.net/mingxiaod/article/details/86233309)<br>
+2. [LightGBM算法总结](https://blog.csdn.net/weixin_39807102/article/details/81912566)<br>
+3. [XGB算法梳理](https://blog.csdn.net/wangrongrongwq/article/details/86755915#2.%E7%AE%97%E6%B3%95%E5%8E%9F%E7%90%86)<br>
+<br>
+
 
 
 
