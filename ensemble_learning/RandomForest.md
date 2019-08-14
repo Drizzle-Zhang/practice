@@ -1,11 +1,11 @@
-# Task1 随机森林算法梳理
+# 随机森林算法梳理
 
 
 ## 1. 集成学习的概念
 
 集成学习(ensemble learning)通过构建并结合多个学习器来完成学习任务，集成学习的一般结构为:先产生一组"个体学习器" (individual learner) ，
 再用某种策略将它们结合起来。示意图如下：<br>
-![](https://github.com/Drizzle-Zhang/practice/blob/master/ensemble_learning/Supp_Task1/ensemble.png)
+![](https://github.com/Drizzle-Zhang/practice/blob/master/ensemble_learning/Supp_RF/ensemble.png)
 
 ## 2. 个体学习器的概念
 个体学习器通常由一个现有的学习算法从训练数据产生，例如C4.5 决策树算法、BP 神经网络算法等，此时集成中只包含同种类型的个体学习器，
