@@ -12,8 +12,31 @@ LightGBM （Light Gradient Boosting Machine）是一个实现 GBDT 算法的框�
 Lightgbm使用了如下两种解决办法：一是GOSS（Gradient-based One-Side Sampling, 基于梯度的单边采样），不是使用所用的样本点来计算梯度，而是对样本进行采样来计算梯度；二是EFB（Exclusive Feature Bundling， 互斥特征捆绑） ，这里不是使用所有的特征来进行扫描获得最佳的切分点，而是将某些特征进行捆绑在一起来降低特征的维度，是寻找最佳切分点的消耗减少。这样大大的降低的处理样本的时间复杂度，但在精度上，通过大量的实验证明，在某些数据集上使用Lightgbm并不损失精度，甚至有时还会提升精度。<br>
 <br>
 
+### 2.1 单边梯度采样算法（Grandient-based One-Side Sampling，GOSS）
+LightGBM使用GOSS算法进行训练样本采样的优化。在AdaBoost算法中，采用了增加被错误分类的样本的权重来优化下一次迭代时对哪些样本进行重点训练。然而GBDT算法中没有样本的权重，但是LightGBM采用了基于每个样本的梯度进行训练样本的优化，具有较大梯度的数据对计算信息增益的贡献比较大。当一个样本点的梯度很小，说明该样本的训练误差很小，即该样本已经被充分训练。然而在计算过程中，仅仅保留梯度较大的样本（例如：预设置一个阈值，或者保留最高若干百分位的梯度样本），抛弃梯度较小样本，会改变样本的分布并且降低学习的精度。GOSS算法的提出很好的解决了这个问题。<br><br>
+GOSS算法的基本思想是首先对训练集数据根据梯度排序，预设一个比例，保留在所有样本中梯度高于该比例的数据样本；梯度低于该比例的数据样本不会直接丢弃，而是设置一个采样比例，从梯度较小的样本中按比例抽取样本。为了弥补对样本分布造成的影响，GOSS算法在计算信息增益时，会对较小梯度的数据集乘以一个系数，用来放大。这样，在计算信息增益时，算法可以更加关注“未被充分训练”的样本数据。<br><br>
+具体的算法如下：<br>
+![](https://github.com/Drizzle-Zhang/practice/blob/master/ensemble_learning/Supp_LightGBM/GOSS.jpg)<br>
+回归树采用方差增益作为选取分裂特征的指标，通过GOSS算法对样本数据集进行采样后，生成梯度较大的数据样本子集A，梯度较小数据样本子集B，根据子集计算方差增益，此处GOSS通过对较小的样本数据集估算增益，大大的减少了计算量。而且通过证明，GOSS算法不会过多的降低训练的精度。<br>
+
+### 2.2 Exclusive Feature Bundling 算法(EFB)
+LightGBM算法不仅通过GOSS算法对训练样本进行采样优化，也进行了特征抽取，以进一步优化模型的训练速度。但是这里的特征抽取与特征提取还不一样，并不减少训练时数据特征向量的维度，而是将互斥特征绑定在一起，从而减少特征维度。该算法的主要思想是：假设通常高维度的数据往往也是稀疏的，而且在稀疏的特征空间中，大量的特征是互斥的，也就是，它们不会同时取到非0值。这样，可以安全的将互斥特征绑定在一起形成一个单一的特征包（称为Exclusive Feature Bundling）。这样，基于特征包构建特征直方图的复杂度由O(#data*#feature)变为O(#data*#bundle).<br><br>
+* 怎么判断哪些特征应该被绑定在一起呢？<br>
+
+LightGBM将这个问题转化成为了图着色问题：给定一个无向图，所有的特征视为图G的顶点集合V，如果两个特征之间不是互斥，使用一个边将它们连接，E代表所有不是互斥特征之间边的集合。使用贪心算法解决该着色问题，结果会将互斥的特征放入相同的集合内（相同的颜色），每个集合即为一个特征包。实际上，有很多特征，虽然不是100%的互斥，但是基本上不会同时取到非0值。所以在LightGBM的算法中，会允许特征有一部分的冲突，这样可以生成更小的特征包集合，进一步减少计算时的特征规模，提高效率。假设变量代表一个特征包内最大的冲突率。那么选用一个相对较小的值，算法可以在效率和精确度之间有更好的平衡。<br>
+基于以上的思路，LightGBM设计了一个这样的算法（Greedy Bundling）：首先，使用训练集的特征构建一个加权图，图的边的权重值为两个特征间的整体冲突。然后，根据图节点（特征）的度对特征进行降序排序。最后，检查每一个排列好的特征，将其在较小的冲突率下（值来控制）分配到一个已存在的特征包内，或者新创建一个特征包（这里判断是否新创建一个特征包，是由算法中的参数K来决定的，K代表了特征包内最大的冲突数）。这样生成特征包的复杂度为。这种处理只在训练前进行一次。因此，该复杂度在feature规模不是很大的情况下，是可以接受的。但是当训练集的特征规模达到百万级或者以上时，就无法忍受了。因此，为了进一步提高算法的效率，LightGBM采用了更加高效的不用构建图的排序策略：按非零值计数排序，因为更多的非零的特征值会导致更高的冲突概率。具体的算法流程如下图所示：<br>
+![](https://github.com/Drizzle-Zhang/practice/blob/master/ensemble_learning/Supp_LightGBM/EFB.jpg)<br>
+<br>
+* EFB算法如何绑定特征？<br>
+上面解决了如何判断哪些特征要被绑定在一起，那么EFB算法如何绑定特征呢？如何既减少了特征维度，又保证原始的特征值可以在特征包中被识别出来呢？由于LightGBM是采用直方图算法减少对于寻找最佳分裂点的算法复杂度，直方图算法将特征值离散到若干个bin中。这里EFB算法为了保留特征，将bundle内不同的特征加上一个偏移常量，使不同特征的值分布到bundle的不同bin内。例如：特征A的取值范围为[0,10)，特征B的原始取值范围为[0，20)，对特征B的取值上加一个偏置常量10，将其取值范围变为[10,30)，这样就可以将特征A和B绑定在一起了。具体的算法流程如下图所示：<br>
+![](https://github.com/Drizzle-Zhang/practice/blob/master/ensemble_learning/Supp_LightGBM/EFB1.jpg)<br>
+EFB算法可以将数据集中互斥的特征绑定在一起，形成低维的特征集合，能够有效的避免对0值特征的计算。实际上，在算法中，可以对每个特征建立一个记录非零值特征的表格。通过对表中数据的扫描，可以有效的降低创建直方图的时间复杂度（从到)。在LightGBM的算法中也确实使用了这种优化方式，当Bundle稀疏时，这个优化与EFB并不冲突。<br><br>
+
+
 参考资料：<br>
 1. [机器学习算法梳理-LightGBM](https://blog.csdn.net/mingxiaod/article/details/86233309)<br>
+2. [论文原文](https://github.com/Drizzle-Zhang/practice/blob/master/ensemble_learning/Supp_LightGBM/LightGBM.pdf)<br>
+2. [LightGBM算法初探](https://cloud.tencent.com/developer/news/375910)<br>
 <br>
 
 ## 3. Histogram VS pre-sorted
@@ -114,27 +137,28 @@ LightGBM中通过下面方法来降低数据并行的通信成本：<br>
 
 
 ## 6. 顺序访问梯度
+预排序算法中有两个频繁的操作会导致cache-miss，也就是缓存消失（对速度的影响很大，特别是数据量很大的时候，顺序访问比随机访问的速度快4倍以上）。<br><br>
+对梯度的访问：在计算增益的时候需要利用梯度，对于不同的特征，访问梯度的顺序是不一样的，并且是随机的<br>
+对于索引表的访问：预排序算法使用了行号和叶子节点号的索引表，防止数据切分的时候对所有的特征进行切分。同访问梯度一样，所有的特征都要通过访问这个索引表来索引。<br><br>
+这两个操作都是随机的访问，会给系统性能带来非常大的下降。<br><br>
+LightGBM使用的直方图算法能很好的解决这类问题。首先。对梯度的访问，因为不用对特征进行排序，同时，所有的特征都用同样的方式来访问，所以只需要对梯度访问的顺序进行重新排序，所有的特征都能连续的访问梯度。并且直方图算法不需要把数据id到叶子节点号上（不需要这个索引表，没有这个缓存消失问题）<br><br>
 
 参考资料：<br>
 1. [机器学习算法梳理-LightGBM](https://blog.csdn.net/mingxiaod/article/details/86233309)<br>
-2. [LightGBM算法总结](https://blog.csdn.net/weixin_39807102/article/details/81912566)<br>
-3. [XGB算法梳理](https://blog.csdn.net/wangrongrongwq/article/details/86755915#2.%E7%AE%97%E6%B3%95%E5%8E%9F%E7%90%86)<br>
 <br>
 
 ## 7. 支持类别特征
+大多数机器学习工具都无法直接支持类别特征，一般需要把类别特征，转化到多维的0，1特征（one-hot操作），降低了空间和时间的效率。类别特征的使用时在实践中很常用的，基于这个考虑，LightGBM优化了对类别特征的支持，可以直接输入类别特征，不需要额外的one-hot操作。<br>
+LightGBM使用直方图的方式去处理，max bin的默认值是256，对于类别型特征值，每一个类别放入一个bin,当类别大于256时，会忽略那些很少出现的类别。在分裂的时候，算的是按“是否属于某个类别”来划分增益。实际效果就是类似于One-hot的编码方式。<br>
 
 参考资料：<br>
-1. [机器学习算法梳理-LightGBM](https://blog.csdn.net/mingxiaod/article/details/86233309)<br>
-2. [LightGBM算法总结](https://blog.csdn.net/weixin_39807102/article/details/81912566)<br>
-3. [XGB算法梳理](https://blog.csdn.net/wangrongrongwq/article/details/86755915#2.%E7%AE%97%E6%B3%95%E5%8E%9F%E7%90%86)<br>
+1. [LightGBM算法梳理](https://blog.csdn.net/qq_32577043/article/details/86215754#levelwise_37)<br>
 <br>
 
 ## 8. sklearn参数
 
 参考资料：<br>
-1. [机器学习算法梳理-LightGBM](https://blog.csdn.net/mingxiaod/article/details/86233309)<br>
-2. [LightGBM算法总结](https://blog.csdn.net/weixin_39807102/article/details/81912566)<br>
-3. [XGB算法梳理](https://blog.csdn.net/wangrongrongwq/article/details/86755915#2.%E7%AE%97%E6%B3%95%E5%8E%9F%E7%90%86)<br>
+1. [LightGBM算法总结](https://blog.csdn.net/weixin_39807102/article/details/81912566)<br>
 <br>
 
 ## 9. CatBoost
