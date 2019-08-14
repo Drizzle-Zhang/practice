@@ -27,7 +27,7 @@ xgboost算法是基于预排序方法，这种构建决策树的算法基本思�
 
 * 首先，对所有特征都按照特征的数值进行预排序。<br>
 * 其次，在遍历分割点的时候用O(data)的代价找到一个特征上的最好分割点。<br>
-* 最后，找到最好的分割点后，将数据分裂成左右子节点。<br><br> 
+* 最后，找到最好的分割点后，将数据分裂成左右子节点。<br>
 
 这样做能精确地找到分割点。但是空间消耗大，时间消耗也大，对cache优化不好。预排序后，特征对梯度的访问是一种随机访问，并且不同的特征访问的顺序不一样，无法对cache进行优化。同时，在每一层，需要随机访问一个行索引到叶子索引的数组，并且不同特征访问的顺序也不一样。<br>
 
@@ -45,13 +45,33 @@ xgboost算法是基于预排序方法，这种构建决策树的算法基本思�
 参考资料：<br>
 1. [机器学习算法梳理-LightGBM](https://blog.csdn.net/mingxiaod/article/details/86233309)<br>
 2. [LightGBM算法总结](https://blog.csdn.net/weixin_39807102/article/details/81912566)<br>
-3. [XGB算法梳理](https://blog.csdn.net/wangrongrongwq/article/details/86755915#2.%E7%AE%97%E6%B3%95%E5%8E%9F%E7%90%86)<br>
 <br>
 
 
 ## 4. leaf-wise VS level-wise
+lightGBM模型采用带深度限制的Leaf-wise的叶子生长策略<br>
+
+### level-wise
+绝大多数的GBDT工具使用按层生长的决策树生长策略。level-wise过一次数据可以同时分裂同一层的叶子，容易进行多线程优化，也好控制模型复杂度，不容易过拟合。但实际上level-wise是一种低效的算法，因为它不加区分的对待同一层的叶子，带来了很多没必要的开销实际上很多叶子的分裂增益较低，没必要进行搜索和分裂。level-wise过程如下图所示：<br>
+![](https://github.com/Drizzle-Zhang/practice/blob/master/ensemble_learning/Supp_LightGBM/level_wise.png)<br>
+
+### leaf-wise
+leaf-wise是一种更为高效的策略，每次从当前所有叶子中，找到分裂增益最大的一个叶子节点，然后分裂。如此循环。同level-wise相比，在分裂次数相同的情况下，leaf-wise可以降低更多的误差，得到更好的精度。Leaf-wise的缺点是可能会长处比较深的决策树，产生过拟合。因此LightGBM在leaf-wise之上增加了一个最大深度的限制，在保证高效率的同时防止过拟合。leaf-wise过程如下图所示：<br>
+![](https://github.com/Drizzle-Zhang/practice/blob/master/ensemble_learning/Supp_LightGBM/leaf_wise.png)<br>
+
+参考资料：<br>
+1. [机器学习算法梳理-LightGBM](https://blog.csdn.net/mingxiaod/article/details/86233309)<br>
+2. [LightGBM算法梳理](https://blog.csdn.net/qq_32577043/article/details/86215754#levelwise_37)<br>
+<br>
+
+## 5. 特征并行和数据并行
 
 
+参考资料：<br>
+1. [机器学习算法梳理-LightGBM](https://blog.csdn.net/mingxiaod/article/details/86233309)<br>
+2. [LightGBM算法总结](https://blog.csdn.net/weixin_39807102/article/details/81912566)<br>
+3. [XGB算法梳理](https://blog.csdn.net/wangrongrongwq/article/details/86755915#2.%E7%AE%97%E6%B3%95%E5%8E%9F%E7%90%86)<br>
+<br>
 
 
 
