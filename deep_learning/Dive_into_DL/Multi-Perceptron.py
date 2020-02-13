@@ -10,8 +10,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import sys
 sys.path.append(
-    "C:\\Users\zhangyu\Documents\my_git\practice\deep_learning\
-    Dive_into_DL")
+    "C:\\Users\zhangyu\Documents\my_git\practice\deep_learning\Dive_into_DL")
 import d2lzh_pytorch as d2l
 print(torch.__version__)
 
@@ -47,17 +46,18 @@ xyplot(x, x.grad, 'grad of tanh')
 # 获取训练集数据和测试集数据
 batch_size = 256
 path_dataset = \
-    'C:\\Users\zhangyu\Documents\my_git\practice\deep_learning\
-    Dive_into_DL\Task01'
+    'C:\\Users\zhangyu\Documents\my_git\practice\deep_learning\Dive_into_DL\Task01'
 train_iter, test_iter = d2l.load_data_fashion_mnist(
     batch_size, root=path_dataset)
 
 # 定义模型参数
 num_inputs, num_outputs, num_hiddens = 784, 10, 256
 
-W1 = torch.tensor(np.random.normal(0, 0.01, (num_inputs, num_hiddens)), dtype=torch.float)
+W1 = torch.tensor(
+    np.random.normal(0, 0.01, (num_inputs, num_hiddens)), dtype=torch.float)
 b1 = torch.zeros(num_hiddens, dtype=torch.float)
-W2 = torch.tensor(np.random.normal(0, 0.01, (num_hiddens, num_outputs)), dtype=torch.float)
+W2 = torch.tensor(
+    np.random.normal(0, 0.01, (num_hiddens, num_outputs)), dtype=torch.float)
 b2 = torch.zeros(num_outputs, dtype=torch.float)
 
 params = [W1, b1, W2, b2]

@@ -16,14 +16,12 @@ import numpy as np
 import sys
 # 添加引用模块的地址
 sys.path.append(
-    "C:\\Users\zhangyu\Documents\my_git\practice\deep_learning\
-    Dive_into_DL")
+    "C:\\Users\zhangyu\Documents\my_git\practice\deep_learning\Dive_into_DL")
 import d2lzh_pytorch as d2l
 
 
 path_dataset = \
-    'C:\\Users\zhangyu\Documents\my_git\practice\deep_learning\
-    Dive_into_DL\Task01'
+    'C:\\Users\zhangyu\Documents\my_git\practice\deep_learning\Dive_into_DL\Task01'
 mnist_train = torchvision.datasets.FashionMNIST(
     root=path_dataset, train=True,
     download=True, transform=transforms.ToTensor())
