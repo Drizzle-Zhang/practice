@@ -111,7 +111,11 @@ plt.scatter(features[:, 1].numpy(), labels.numpy(), 1)
 
 ```
 
+<<<<<<< HEAD:deep_learning/Dive_into_DL/markdowns/Task01_LR_softmax_MP.md
+![](https://github.com/Drizzle-Zhang/practice/blob/master/deep_learning/Dive_into_DL/materials/Task01/scatterplot.png)
+=======
 ![Image Name](https://github.com/Drizzle-Zhang/practice/blob/master/deep_learning/Dive_into_DL/Task01/scatterplot.png)
+>>>>>>> 47c7e0a3837c9f30795bd98c0665fbdefedbdf31:deep_learning/Dive_into_DL/Task01_LR_softmax_MP.md
 
 ```python
 # linear regression model without pytorch
@@ -343,7 +347,7 @@ import d2lzh_pytorch as d2l
 ```python
 # Fashion-MNIST数据集的下载与导入
 path_dataset = \
-    'C:\\Users\zhangyu\Documents\my_git\practice\deep_learning\Dive_into_DL\Task01'
+    'C:\\Users\zhangyu\Documents\my_git\practice\deep_learning\Dive_into_DL\materials\Task01'
 mnist_train = torchvision.datasets.FashionMNIST(
     root=path_dataset, train=True,
     download=True, transform=transforms.ToTensor())
@@ -395,7 +399,7 @@ def show_fashion_mnist(images, labels):
     plt.show()
 ```
 
-![](https://github.com/Drizzle-Zhang/practice/blob/master/deep_learning/Dive_into_DL/Task01/mnist_example.png)
+![](https://github.com/Drizzle-Zhang/practice/blob/master/deep_learning/Dive_into_DL/materials/Task01/mnist_example.png)
 
 ```python
 x = []
@@ -511,14 +515,14 @@ def cross_entropy(y_hat, y):
 > torch.gather(input, dim, index, out=None) → Tensor     Gathers values along an axis specified by dim.
 >
 >     Parameters: 
->     
+>    
 >         input (Tensor) – The source tensor
 >         dim (int) – The axis along which to index
 >         index (LongTensor) – The indices of elements to gather
 >         out (Tensor, optional) – Destination tensor
->     
+>    
 >     Example:
->     
+>    
 >     >>> t = torch.Tensor([[1,2],[3,4]])
 >     >>> torch.gather(t, 1, torch.LongTensor([[0,0],[1,0]]))
 >      1  1
@@ -610,7 +614,7 @@ epoch 4, loss 0.5017, train acc 0.831, test acc 0.825
 epoch 5, loss 0.4853, train acc 0.837, test acc 0.827
 ```
 
-![](https://github.com/Drizzle-Zhang/practice/blob/master/deep_learning/Dive_into_DL/Task01/mnist_result.png)
+![](https://github.com/Drizzle-Zhang/practice/blob/master/deep_learning/Dive_into_DL/materials/Task01/mnist_result.png)
 
 ### 2.5 softmax的简洁实现
 
@@ -740,9 +744,9 @@ y.sum().backward()
 xyplot(x, x.grad, 'grad of relu')
 ```
 
-![](https://github.com/Drizzle-Zhang/practice/blob/master/deep_learning/Dive_into_DL/Task01/relu.png)
+![](https://github.com/Drizzle-Zhang/practice/blob/master/deep_learning/Dive_into_DL/materials/Task01/relu.png)
 
-![](https://github.com/Drizzle-Zhang/practice/blob/master/deep_learning/Dive_into_DL/Task01/relu_grad.png)
+![](https://github.com/Drizzle-Zhang/practice/blob/master/deep_learning/Dive_into_DL/materials/Task01/relu_grad.png)
 
 ##### Sigmoid函数
 
@@ -755,9 +759,9 @@ y.sum().backward()
 xyplot(x, x.grad, 'grad of sigmoid')
 ```
 
-![](https://github.com/Drizzle-Zhang/practice/blob/master/deep_learning/Dive_into_DL/Task01/sigmoid.png)
+![](https://github.com/Drizzle-Zhang/practice/blob/master/deep_learning/Dive_into_DL/materials/Task01/sigmoid.png)
 
-![](https://github.com/Drizzle-Zhang/practice/blob/master/deep_learning/Dive_into_DL/Task01/s_grad.png)
+![](https://github.com/Drizzle-Zhang/practice/blob/master/deep_learning/Dive_into_DL/materials/Task01/s_grad.png)
 
 ##### tanh函数
 
@@ -770,9 +774,9 @@ y.sum().backward()
 xyplot(x, x.grad, 'grad of tanh')
 ```
 
-![](https://github.com/Drizzle-Zhang/practice/blob/master/deep_learning/Dive_into_DL/Task01/tanh.png)
+![](https://github.com/Drizzle-Zhang/practice/blob/master/deep_learning/Dive_into_DL/materials/Task01/tanh.png)
 
-![](https://github.com/Drizzle-Zhang/practice/blob/master/deep_learning/Dive_into_DL/Task01/tanh_grad.png)
+![](https://github.com/Drizzle-Zhang/practice/blob/master/deep_learning/Dive_into_DL/materials/Task01/tanh_grad.png)
 
 #### 关于激活函数的选择
 
@@ -813,7 +817,7 @@ $$
 # 获取训练集数据和测试集数据
 batch_size = 256
 path_dataset = \
-    'C:\\Users\zhangyu\Documents\my_git\practice\deep_learning\Dive_into_DL\Task01'
+    'C:\\Users\zhangyu\Documents\my_git\practice\deep_learning\Dive_into_DL\materials\Task01'
 train_iter, test_iter = d2l.load_data_fashion_mnist(
     batch_size, root=path_dataset)
 
