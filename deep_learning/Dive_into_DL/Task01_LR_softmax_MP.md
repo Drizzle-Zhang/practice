@@ -111,7 +111,7 @@ plt.scatter(features[:, 1].numpy(), labels.numpy(), 1)
 
 ```
 
-![](C:\Users\zhangyu\Documents\my_git\practice\deep_learning\Dive_into_DL\Task01\scatterplot.png)
+![](https://github.com/Drizzle-Zhang/practice/blob/master/deep_learning/Dive_into_DL/Task01/scatterplot.png)
 
 ```python
 # linear regression model without pytorch
@@ -395,7 +395,7 @@ def show_fashion_mnist(images, labels):
     plt.show()
 ```
 
-![]()
+![](https://github.com/Drizzle-Zhang/practice/blob/master/deep_learning/Dive_into_DL/Task01/mnist_example.png)
 
 ```python
 x = []
@@ -610,7 +610,7 @@ epoch 4, loss 0.5017, train acc 0.831, test acc 0.825
 epoch 5, loss 0.4853, train acc 0.837, test acc 0.827
 ```
 
-![]()
+![](https://github.com/Drizzle-Zhang/practice/blob/master/deep_learning/Dive_into_DL/Task01/mnist_result.png)
 
 ### 2.5 softmax的简洁实现
 
@@ -740,9 +740,9 @@ y.sum().backward()
 xyplot(x, x.grad, 'grad of relu')
 ```
 
-![]()
+![](https://github.com/Drizzle-Zhang/practice/blob/master/deep_learning/Dive_into_DL/Task01/relu.png)
 
-![]()
+![](https://github.com/Drizzle-Zhang/practice/blob/master/deep_learning/Dive_into_DL/Task01/relu_grad.png)
 
 ##### Sigmoid函数
 
@@ -755,9 +755,9 @@ y.sum().backward()
 xyplot(x, x.grad, 'grad of sigmoid')
 ```
 
-![]()
+![](https://github.com/Drizzle-Zhang/practice/blob/master/deep_learning/Dive_into_DL/Task01/sigmoid.png)
 
-![]()
+![](https://github.com/Drizzle-Zhang/practice/blob/master/deep_learning/Dive_into_DL/Task01/s_grad.png)
 
 ##### tanh函数
 
@@ -770,9 +770,9 @@ y.sum().backward()
 xyplot(x, x.grad, 'grad of tanh')
 ```
 
-![]()
+![](https://github.com/Drizzle-Zhang/practice/blob/master/deep_learning/Dive_into_DL/Task01/tanh.png)
 
-![]()
+![](https://github.com/Drizzle-Zhang/practice/blob/master/deep_learning/Dive_into_DL/Task01/tanh_grad.png)
 
 #### 关于激活函数的选择
 
