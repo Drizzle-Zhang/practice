@@ -111,11 +111,7 @@ plt.scatter(features[:, 1].numpy(), labels.numpy(), 1)
 
 ```
 
-<<<<<<< HEAD:deep_learning/Dive_into_DL/markdowns/Task01_LR_softmax_MP.md
 ![](https://github.com/Drizzle-Zhang/practice/blob/master/deep_learning/Dive_into_DL/materials/Task01/scatterplot.png)
-=======
-![Image Name](https://github.com/Drizzle-Zhang/practice/blob/master/deep_learning/Dive_into_DL/Task01/scatterplot.png)
->>>>>>> 47c7e0a3837c9f30795bd98c0665fbdefedbdf31:deep_learning/Dive_into_DL/Task01_LR_softmax_MP.md
 
 ```python
 # linear regression model without pytorch
