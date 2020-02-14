@@ -34,7 +34,7 @@ def load_data_jay_lyrics():
 def one_hot(x, n_class, dtype=torch.float32):
     result = torch.zeros(x.shape[0], n_class, dtype=dtype,
                          device=x.device)  # shape: (n, n_class)
-    result.scatter_(1, x.view(-1, 1), 1)  # result[i, x[i, 0]] = 1
+    result.scatter_(1, x.long().view(-1, 1), 1)  # result[i, x[i, 0]] = 1
     return result
 
 
@@ -166,6 +166,8 @@ def train_and_predict_rnn(rnn, get_params, init_rnn_state, num_hiddens,
         if not is_random_iter:
             state = init_rnn_state(batch_size, num_hiddens, device)
         l_sum, n, start = 0.0, 0, time.time()
+        # l_sum: sum of loss function
+        # n: num of samples
         data_iter = data_iter_fn(corpus_indices, batch_size, num_steps, device)
         for X, Y in data_iter:
             if is_random_iter:  # 如使用随机采样，在每个小批量更新前初始化隐藏状态
@@ -204,4 +206,13 @@ def train_and_predict_rnn(rnn, get_params, init_rnn_state, num_hiddens,
                                         num_hiddens, vocab_size, device,
                                         idx_to_char, char_to_idx))
 
+
+num_epochs, num_steps, batch_size, lr, clipping_theta = 250, 35, 32, 1e2, 1e-2
+pred_period, pred_len, prefixes = 50, 50, ['分开', '不分开']
+
+train_and_predict_rnn(rnn, get_params, init_rnn_state, num_hiddens,
+                      vocab_size, device, corpus_indices, idx_to_char,
+                      char_to_idx, True, num_epochs, num_steps, lr,
+                      clipping_theta, batch_size, pred_period, pred_len,
+                      prefixes)
 
