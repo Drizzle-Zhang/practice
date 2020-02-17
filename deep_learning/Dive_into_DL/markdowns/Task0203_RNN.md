@@ -320,6 +320,15 @@ def train_and_predict_rnn(rnn, get_params, init_rnn_state, num_hiddens,
 
 ```
 
+> 随机采样时：每次迭代都需要重新初始化隐藏状态（每个epoch有很多词迭代，每次迭代都需要进行初始化，因为对于随机采样的样本中只有一个批量内的数据是连续的）
+>
+> 相邻采样时：如果是相邻采样，则说明前后两个batch的数据是连续的，所以在训练每个batch的时候只需要更新一次（也就是说模型在一个epoch中的迭代不需要重新初始化隐藏状态）
+>
+> detach了隐藏状态H。采用相邻采样的时候，当前这个batch的H来自上一个batch，如果没有在这个batch开始的时候把H（也就是H_{0}）从计算图当中分离出来，H的梯度的计算依赖于上一个batch的序列，而这一个过程会一直传递到最初的batch，所以随着batch的增加，计算H梯度的时间会越来越长。在batch开始的时候把H从计算图当中分离了，那就相当于是把上一个batch结束时的H的值作为当前batch的H的初始值，这个时候H是一个叶子，最后这个batch结束的时候，对H的梯度只会算到当前这个batch的序列起始处。
+>
+> 一般用grad.zero_grad()，创建grad.data变量，存储导数值
+> 而grad.data.zero_()，如果没有设置requires_grad=True，grad.data变量是不存在的
+
 #### 训练模型并创作歌词
 
 现在我们可以训练模型了。首先，设置模型超参数。我们将根据前缀“分开”和“不分开”分别创作长度为50个字符（不考虑前缀长度）的一段歌词。我们每过50个迭代周期便根据当前训练的模型创作一段歌词。
@@ -338,18 +347,21 @@ train_and_predict_rnn(rnn, get_params, init_rnn_state, num_hiddens,
 ```
 
 ```
-epoch 50, perplexity 66.143884, time 2.58 sec
- - 分开 我想要 你爱我 说你 你有你的让我 我有你的见你 我有你的可爱 我有你的可爱 我有你的可爱 我有你
- - 不分开 你在我 别你我 别你我 说你我 说你我 说你我 说你我 说你我 说你我 说你我 说你我 说你我 说
-epoch 100, perplexity 10.115903, time 2.57 sec
- - 分开 有一么 娘给堂 我满就有样牵着你的手不放开 爱可不能够永远单纯没有悲害 我 想带你骑单车 我 想我
- - 不分开简 我 一直你骑眼车 我 想和你骑棒车 我这样的生活 我爱你的你爱在西的透  一定实对默义 难生你的
-epoch 150, perplexity 2.842563, time 2.74 sec
- - 分开  我爱你这 你打不外 是一场梦 不有不同 你跟懂 一不知珍重 谁有苦衷 离小了外屋 白色蜡烛 温暖
- - 不分开扫 我叫你爸 你打我妈 这样跟梦不屈 一定正气 快使用双截棍 哼哼哈兮 快使用双截棍 哼哼哈兮 快使
-epoch 200, perplexity 1.619155, time 2.70 sec
- - 分开 有愿心 别给我 没有了枪了透 这里年拿后排轻做 我想大声宣布我妈妈要 你想能大前是我妈妈 捏道 手
- - 不分开扫 我叫你爸 你打我妈 这样对吗不嘛这样 何必让酒牵鼻子走 瞎 说一个骑斯  什悔苦教 我有了努力向
+epoch 50, perplexity 69.294698, time 0.43 sec
+ - 分开 一颗两 一颗四 一颗四 一颗四 一颗四 一颗四 一颗四 一颗四 一颗四 一颗四 一颗四 一颗四 一
+ - 不分开 快颗用 一怪我 一子四 一颗四 一颗四 一颗四 一颗四 一颗四 一颗四 一颗四 一颗四 一颗四 一
+epoch 100, perplexity 10.047098, time 0.43 sec
+ - 分开 一只用双截棍 一直会我 说你说外 在一定梦 你一了纵 你一定空 你一了纵 你一定空 你一定纵 你一
+ - 不分开堡 我有你和 你我已外乡对 一场看兮 快使用双截棍 哼哼哈兮 快使用双截棍 哼哼哈兮 快使用双截棍
+epoch 150, perplexity 2.887469, time 0.43 sec
+ - 分开 一只都不三步四步 连成线背著背默默许在心愿 看远方的星如否听的见 手牵手 一步两步三步四步 连成线
+ - 不分开吗 我爱你烦 你来我妈 这样了我的证据 情晶激的泪滴 闪烁成回忆 除人的美丽  没有你对不有 有只想
+epoch 200, perplexity 1.569032, time 0.44 sec
+ - 分开 装默心蜘教棍七百 她念让午险点阳B 瞎教堂午险边阳光射进教堂的角度 能知道你前世是狼人还起 你却形
+ - 不分开吗 我叫你爸 你打我妈 这样对吗干嘛这样 还必让酒牵鼻子走 瞎 说笑我习多太就我 一和你 别怪的 丽
+epoch 250, perplexity 1.296450, time 0.43 sec
+ - 分开 让我爱好过 这样的美丽果 心所妙我的手友幽我 泪散的爹娘早已苍老了轮廓 娘子我欠你太多 一壶好酒
+ - 不分开期把的胖女巫 用拉丁文念咒语啦啦呜 她养的黑猫笑起来像哭 啦啦啦呜 世吹来性发飘白 牵着你的手 一阵
 ```
 
 ```python
@@ -360,6 +372,26 @@ train_and_predict_rnn(rnn, get_params, init_rnn_state, num_hiddens,
                       clipping_theta, batch_size, pred_period, pred_len,
                       prefixes)
 ```
+
+```
+epoch 50, perplexity 57.514421, time 0.40 sec
+ - 分开 我想要的爱写在西 我想你这样的让我 别有我有你你的一 悲想我这样的可爱 我不要再想 我不 我不要这
+ - 不分开 我想要的可写女人 别想我有你的让我 我有你的可写 我有你的生写在西 我想你这样写着我的 有要我的爱
+epoch 100, perplexity 6.670274, time 0.45 sec
+ - 分开 我想要 爱你眼睛看着我 别发抖 一步两颗三颗四颗望著天 看星星 一颗两颗三颗四颗 连成线背著背默默
+ - 不分开步 你已经很 我想多带 你不的梦 在有没梦 你一定梦 在一定梦 说一定梦 说一定梦 说一定梦 说一定
+epoch 150, perplexity 2.018637, time 0.40 sec
+ - 分开 一候我 你是我 手满球的 说 一定汉 一颗箱颗的留 它我得很你 伤故事 告诉我 印地安的传说 还真
+ - 不分开觉 你已经离开我 不知不觉 我跟了这节奏 后知后觉 又过了一个秋 后知后觉 我该好好生活 我该好好生
+epoch 200, perplexity 1.277430, time 0.40 sec
+ - 分开 一候堂 说为我的脚有人亏 隔铁是声了写垂甜朽的可篇 我给你的爱写在西元前 深埋在美索不达米亚平原
+ - 不分开觉 你已经离开我 不知不觉 我跟了这节奏 后知后觉 又过了一个秋 后知后觉 我该好好生活 我该好好生
+epoch 250, perplexity 1.166600, time 0.41 sec
+ - 分开 一候了 是诉于依旧代日折黑瓦的淡淡的忧伤 消失的 旧时光 一九四三 回头看 的片段 有一些风霜 老
+ - 不分开觉 你已经离开我 不知不觉 我跟了这节奏 后知后觉 又过了一个秋 后知后觉 我该好好生活 我该好好生
+```
+
+
 
 ## 3 循环神经网络的简介实现
 
@@ -385,3 +417,135 @@ train_and_predict_rnn(rnn, get_params, init_rnn_state, num_hiddens,
 * `h_n` of shape (num_layers * num_directions, batch_size, hidden_size): tensor containing the hidden state for t = num_steps.
 
 现在我们构造一个`nn.RNN`实例，并用一个简单的例子来看一下输出的形状。
+
+```python
+# RNN with pytorch
+rnn_layer = nn.RNN(input_size=vocab_size, hidden_size=num_hiddens)
+num_steps, batch_size = 35, 2
+X = torch.rand(num_steps, batch_size, vocab_size)
+state = None
+Y, state_new = rnn_layer(X, state)
+print(Y.shape, state_new.shape)
+```
+
+```
+torch.Size([35, 2, 256]) torch.Size([1, 2, 256])
+```
+
+```python
+# 定义一个完整的基于循环神经网络的语言模型
+# define model
+class RNNModel(nn.Module):
+    def __init__(self, rnn_layer, vocab_size):
+        super(RNNModel, self).__init__()
+        self.rnn = rnn_layer
+        self.hidden_size = rnn_layer.hidden_size * (2 if rnn_layer.bidirectional else 1)
+        self.vocab_size = vocab_size
+        self.dense = nn.Linear(self.hidden_size, vocab_size)
+
+    def forward(self, inputs, state):
+        # inputs.shape: (batch_size, num_steps)
+        X = to_onehot(inputs, vocab_size)
+        X = torch.stack(X)  # X.shape: (num_steps, batch_size, vocab_size)
+        hiddens, state = self.rnn(X, state)
+        hiddens = hiddens.view(-1, hiddens.shape[-1])  # hiddens.shape: (num_steps * batch_size, hidden_size)
+        output = self.dense(hiddens)
+        return output, state
+```
+
+```python
+# prediction
+def predict_rnn_pytorch(prefix, num_chars, model, vocab_size, device, idx_to_char,
+                      char_to_idx):
+    state = None
+    output = [char_to_idx[prefix[0]]]  # output记录prefix加上预测的num_chars个字符
+    for t in range(num_chars + len(prefix) - 1):
+        X = torch.tensor([output[-1]], device=device).view(1, 1)
+        (Y, state) = model(X, state)  # 前向计算不需要传入模型参数
+        if t < len(prefix) - 1:
+            output.append(char_to_idx[prefix[t + 1]])
+        else:
+            output.append(Y.argmax(dim=1).item())
+    return ''.join([idx_to_char[i] for i in output])
+
+
+# 使用权重为随机值的模型来预测一次
+model = RNNModel(rnn_layer, vocab_size).to(device)
+predict_rnn_pytorch('分开', 10, model, vocab_size, device, idx_to_char, char_to_idx)
+
+```
+
+```
+'分开替视吃蛦旁苦苦苦鼠蜘'
+```
+
+```python
+# train; consecutive sample
+def train_and_predict_rnn_pytorch(model, num_hiddens, vocab_size, device,
+                                  corpus_indices, idx_to_char, char_to_idx,
+                                  num_epochs, num_steps, lr, clipping_theta,
+                                  batch_size, pred_period, pred_len, prefixes):
+    loss = nn.CrossEntropyLoss()
+    optimizer = torch.optim.Adam(model.parameters(), lr=lr)
+    model.to(device)
+    for epoch in range(num_epochs):
+        l_sum, n, start = 0.0, 0, time.time()
+        data_iter = d2l.data_iter_consecutive(corpus_indices, batch_size,
+                                              num_steps, device)  # 相邻采样
+        state = None
+        for X, Y in data_iter:
+            if state is not None:
+                # 使用detach函数从计算图分离隐藏状态
+                if isinstance(state, tuple):  # LSTM, state:(h, c)
+                    state[0].detach_()
+                    state[1].detach_()
+                else:
+                    state.detach_()
+            (output, state) = model(X,
+                                    state)  # output.shape: (num_steps * batch_size, vocab_size)
+            y = torch.flatten(Y.T)
+            l = loss(output, y.long())
+
+            optimizer.zero_grad()
+            l.backward()
+            grad_clipping(model.parameters(), clipping_theta, device)
+            optimizer.step()
+            l_sum += l.item() * y.shape[0]
+            n += y.shape[0]
+
+        if (epoch + 1) % pred_period == 0:
+            print('epoch %d, perplexity %f, time %.2f sec' % (
+                epoch + 1, math.exp(l_sum / n), time.time() - start))
+            for prefix in prefixes:
+                print(' -', predict_rnn_pytorch(
+                    prefix, pred_len, model, vocab_size, device, idx_to_char,
+                    char_to_idx))
+                
+
+num_epochs, batch_size, lr, clipping_theta = 250, 32, 1e-3, 1e-2
+pred_period, pred_len, prefixes = 50, 50, ['分开', '不分开']
+train_and_predict_rnn_pytorch(model, num_hiddens, vocab_size, device,
+                            corpus_indices, idx_to_char, char_to_idx,
+                            num_epochs, num_steps, lr, clipping_theta,
+                            batch_size, pred_period, pred_len, prefixes)
+
+```
+
+```
+epoch 50, perplexity 11.145100, time 0.25 sec
+ - 分开 一场悲剧 我想要的可爱女人 坏坏的让我疯狂的可爱女人 坏坏的让我疯狂的可爱女人 坏坏的让我疯狂的可
+ - 不分开 我想你的手 我的 我想你 不过我不 我不了我不 我不多再想 我不要再想 我不要再想 我不 我不多再
+epoch 100, perplexity 1.283560, time 0.25 sec
+ - 分开的风美 不知道 就是开不了口模著一定实我的难空 却只想你的可爱女人 温柔的让我心疼的可爱女人 透明的
+ - 不分开不了你说 是是我听你 黑色的没有你 我说了飞 一九四三 泛头看抽现 还有什么满天 干什么 干什么 东
+epoch 150, perplexity 1.066973, time 0.22 sec
+ - 分开 我轻的的溪边 我都笔 太多 我 别反方 那么面阵风难怎么  我 从以后跟你的让我感动的可爱女人 坏
+ - 不分开不了你说 是不听听你 会怪我 你过我不多口  为什么我想我想要你却  我有些你 我笑要再想要 直
+epoch 200, perplexity 1.052460, time 0.22 sec
+ - 分开 我轻的的家边 后知道 我后再会多 几天 只是上怕的黑白美主随的可爱 我想要你想微为每妈妈到 什么都
+ - 不分开 我是你的黑笑笑能承受我已你了可爱 我的温暖  快什么分妈出 干什么 干什么 我沉下 天都当有 在等
+epoch 250, perplexity 1.020480, time 0.22 sec
+ - 分开 我不要气相 黑色幽默 说通 你又再考倒我 说散 你想很久了吧? 败给你的黑色幽默 不想太多 我想一
+ - 不分开 我不开不悲剧 印可以让我满上为一九四三 泛黄的春联还残己养前 那么上到几小 我不要再说散 我想这故
+```
+
