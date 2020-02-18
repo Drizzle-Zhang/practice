@@ -188,7 +188,9 @@ L2 norm of w: 14.10058307647705
 L2 norm of w: 0.05081847682595253
 ```
 
-![]()
+![](https://github.com/Drizzle-Zhang/practice/blob/master/deep_learning/Dive_into_DL/materials/Task03/weight_decay0.png)
+
+![](https://github.com/Drizzle-Zhang/practice/blob/master/deep_learning/Dive_into_DL/materials/Task03/weight_decay3.png)
 
 ### 1.4 丢弃法
 
@@ -196,7 +198,7 @@ L2 norm of w: 0.05081847682595253
 
 
 $$
- h_i = \phi\left(x_1 w_{1i} + x_2 w_{2i} + x_3 w_{3i} + x_4 w_{4i} + b_i\right) 
+h_i = \phi\left(x_1 w_{1i} + x_2 w_{2i} + x_3 w_{3i} + x_4 w_{4i} + b_i\right)
 $$
 
 
@@ -333,3 +335,94 @@ epoch 4, loss 0.0018, train acc 0.836, test acc 0.833
 epoch 5, loss 0.0016, train acc 0.849, test acc 0.842
 ```
 
+## 2 梯度消失和梯度爆炸
+
+深度模型有关数值稳定性的典型问题是消失（vanishing）和爆炸（explosion）。
+
+**当神经网络的层数较多时，模型的数值稳定性容易变差。**
+
+假设一个层数为$L$的多层感知机的第$l$层$\boldsymbol{H}^{(l)}$的权重参数为$\boldsymbol{W}^{(l)}$，输出层$\boldsymbol{H}^{(L)}$的权重参数为$\boldsymbol{W}^{(L)}$。为了便于讨论，不考虑偏差参数，且设所有隐藏层的激活函数为恒等映射（identity mapping）$\phi(x) = x$。给定输入$\boldsymbol{X}$，多层感知机的第$l$层的输出$\boldsymbol{H}^{(l)} = \boldsymbol{X} \boldsymbol{W}^{(1)} \boldsymbol{W}^{(2)} \ldots \boldsymbol{W}^{(l)}$。此时，如果层数$l$较大，$\boldsymbol{H}^{(l)}$的计算可能会出现衰减或爆炸。举个例子，假设输入和所有层的权重参数都是标量，如权重参数为0.2和5，多层感知机的第30层输出为输入$\boldsymbol{X}$分别与$0.2^{30} \approx 1 \times 10^{-21}$（消失）和$5^{30} \approx 9 \times 10^{20}$（爆炸）的乘积。当层数较多时，梯度的计算也容易出现消失或爆炸。
+
+## 3 随机初始化模型参数
+
+在神经网络中，通常需要随机初始化模型参数。下面我们来解释这样做的原因。
+
+回顾多层感知机一节描述的多层感知机。为了方便解释，假设输出层只保留一个输出单元$o_1$（删去$o_2$和$o_3$以及指向它们的箭头），且隐藏层使用相同的激活函数。**如果将每个隐藏单元的参数都初始化为相等的值**，那么在正向传播时每个隐藏单元将根据相同的输入计算出相同的值，并传递至输出层。**在反向传播中，每个隐藏单元的参数梯度值相等**。因此，这些参数在使用基于梯度的优化算法迭代后值依然相等。之后的迭代也是如此。在这种情况下，无论隐藏单元有多少，**隐藏层本质上只有1个隐藏单元在发挥作用**。因此，正如在前面的实验中所做的那样，我们通常将神经网络的模型参数，特别是权重参数，进行随机初始化。
+
+
+
+![Image Name](https://cdn.kesci.com/upload/image/q5jg76kloy.png?imageView2/0/w/960/h/960)
+
+
+
+###  PyTorch的默认随机初始化
+
+随机初始化模型参数的方法有很多。在线性回归的简洁实现中，我们使用`torch.nn.init.normal_()`使模型`net`的权重参数采用正态分布的随机初始化方式。不过，PyTorch中`nn.Module`的模块参数都采取了较为合理的初始化策略（不同类型的layer具体采样的哪一种初始化方法的可参考[源代码](https://github.com/pytorch/pytorch/tree/master/torch/nn/modules)），因此一般不用我们考虑。
+
+
+### Xavier随机初始化
+
+还有一种比较常用的随机初始化方法叫作Xavier随机初始化。
+假设某全连接层的输入个数为$a$，输出个数为$b$，Xavier随机初始化将使该层中权重参数的每个元素都随机采样于均匀分布
+
+
+$$
+U\left(-\sqrt{\frac{6}{a+b}}, \sqrt{\frac{6}{a+b}}\right).
+$$
+
+
+它的设计主要考虑到，模型参数初始化后，每层输出的方差不该受该层输入个数影响，且每层梯度的方差也不该受该层输出个数影响。
+
+## 3 考虑环境因素
+
+### 协变量偏移
+
+这里我们假设，虽然输入的分布可能随时间而改变，但是标记函数，即条件分布P（y∣x）不会改变。虽然这个问题容易理解，但在实践中也容易忽视。
+
+想想区分猫和狗的一个例子。我们的训练数据使用的是猫和狗的真实的照片，但是在测试时，我们被要求对猫和狗的卡通图片进行分类。
+
+|                             cat                              |                             cat                              |                             dog                              |                             dog                              |
+| :----------------------------------------------------------: | :----------------------------------------------------------: | :----------------------------------------------------------: | :----------------------------------------------------------: |
+| ![Image Name](https://cdn.kesci.com/upload/image/q5jg8j72fl.jpg?imageView2/0/w/200/h/200) | ![Image Name](https://cdn.kesci.com/upload/image/q5jg993za3.jpg?imageView2/0/w/200/h/200) | ![Image Name](https://cdn.kesci.com/upload/image/q5jg9tqs4s.jpg?imageView2/0/w/200/h/200) | ![Image Name](https://cdn.kesci.com/upload/image/q5jga6mnsk.jpg?imageView2/0/w/200/h/200) |
+
+测试数据：
+
+| cat                                                          | cat                                                          | dog                                                          | dog                                                          |
+| ------------------------------------------------------------ | ------------------------------------------------------------ | ------------------------------------------------------------ | ------------------------------------------------------------ |
+| ![Image Name](https://cdn.kesci.com/upload/image/q5jgat5lsd.png?imageView2/0/w/200/h/200) | ![Image Name](https://cdn.kesci.com/upload/image/q5jgbaoij8.png?imageView2/0/w/200/h/200) | ![Image Name](https://cdn.kesci.com/upload/image/q5jgbswvbb.png?imageView2/0/w/200/h/200) | ![Image Name](https://cdn.kesci.com/upload/image/q5jgc5j7zv.png?imageView2/0/w/200/h/200) |
+
+显然，这不太可能奏效。训练集由照片组成，而测试集只包含卡通。在一个看起来与测试集有着本质不同的数据集上进行训练，而不考虑如何适应新的情况，这是不是一个好主意。不幸的是，这是一个非常常见的陷阱。
+
+统计学家称这种协变量变化是因为问题的根源在于特征分布的变化（即协变量的变化）。数学上，我们可以说P（x）改变了，但P（y∣x）保持不变。尽管它的有用性并不局限于此，当我们认为x导致y时，协变量移位通常是正确的假设。
+
+> 参考资料：
+>
+> [**内部协变量偏移(Internal Covariate Shift)和批归一化(Batch Normalization)**](https://www.jianshu.com/p/a78470f521dd)
+>
+> [DistanceMetricLearningunderCovariateShift](citeseerx.ist.psu.edu/viewdoc/download;jsessionid=40EAB227EFB0BDC14A890FDCD8FD882C?doi=10.1.1.208.5926&rep=rep1&type=pdf)
+
+### 标签偏移
+
+当我们认为导致偏移的是标签P（y）上的边缘分布的变化，但类条件分布是不变的P（x∣y）时，就会出现相反的问题。当我们认为y导致x时，标签偏移是一个合理的假设。例如，通常我们希望根据其表现来预测诊断结果。在这种情况下，我们认为诊断引起的表现，即疾病引起的症状。有时标签偏移和协变量移位假设可以同时成立。例如，当真正的标签函数是确定的和不变的，那么协变量偏移将始终保持，包括如果标签偏移也保持。有趣的是，当我们期望标签偏移和协变量偏移保持时，使用来自标签偏移假设的方法通常是有利的。这是因为这些方法倾向于操作看起来像标签的对象，这（在深度学习中）与处理看起来像输入的对象（在深度学习中）相比相对容易一些。
+
+举例：
+
+病因（要预测的诊断结果）导致 症状（观察到的结果）。  
+
+训练数据集，数据很少只包含流感p(y)的样本。  
+
+而测试数据集有流感p(y)和流感q(y)，其中不变的是流感症状p(x|y)。
+
+通俗来讲，就是流感的症状大致相同，但是流感类型不同，即用病因1的分布预测病因2，用普通肺炎的模型预测新冠肺炎那肯定是不行的。
+
+### 概念偏移
+
+另一个相关的问题出现在概念转换中，即标签本身的定义发生变化的情况。这听起来很奇怪，毕竟猫就是猫。的确，猫的定义可能不会改变，但我们能不能对软饮料也这么说呢？事实证明，如果我们周游美国，按地理位置转移数据来源，我们会发现，即使是如图所示的这个简单术语的定义也会发生相当大的概念转变。
+
+
+![Image Name](https://cdn.kesci.com/upload/image/q5jgd81pl3.png?imageView2/0/w/640/h/640)
+
+$$
+美国软饮料名称的概念转变 
+$$
+如果我们要建立一个机器翻译系统，分布P（y∣x）可能因我们的位置而异。这个问题很难发现。另一个可取之处是P（y∣x）通常只是逐渐变化。
