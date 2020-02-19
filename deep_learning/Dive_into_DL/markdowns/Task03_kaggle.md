@@ -171,7 +171,7 @@ fold 4, train rmse 0.230761, valid rmse 0.258665
 5-fold validation: avg train rmse 0.234317, avg valid rmse 0.240775
 ```
 
-![]()
+![](https://github.com/Drizzle-Zhang/practice/blob/master/deep_learning/Dive_into_DL/materials/Task03/kaggle.png)
 
 ## 预测
 
