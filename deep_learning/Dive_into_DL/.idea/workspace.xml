@@ -2,12 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="3a723a8b-2392-4821-9586-2b4118ff67da" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/codes/MT.py" beforeDir="false" afterPath="$PROJECT_DIR$/codes/MT.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/codes/RNN.py" beforeDir="false" afterPath="$PROJECT_DIR$/codes/RNN.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/markdowns/Task0203_RNN.md" beforeDir="false" afterPath="$PROJECT_DIR$/markdowns/Task0203_RNN.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/markdowns/Task04_MT.md" beforeDir="false" afterPath="$PROJECT_DIR$/markdowns/Task04_MT.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/materials/Task04/d2l9528/d2l/data/nmt.py" beforeDir="false" afterPath="$PROJECT_DIR$/materials/Task04/d2l9528/d2l/data/nmt.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -79,8 +74,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/codes/MT.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="293">
-              <caret line="267" column="61" selection-start-line="267" selection-start-column="61" selection-end-line="267" selection-end-column="61" />
+            <state relative-caret-position="109">
+              <caret line="285" column="27" lean-forward="true" selection-start-line="285" selection-start-column="27" selection-end-line="285" selection-end-column="27" />
             </state>
           </provider>
         </entry>
@@ -274,8 +269,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/codes/MT.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="293">
-          <caret line="267" column="61" selection-start-line="267" selection-start-column="61" selection-end-line="267" selection-end-column="61" />
+        <state relative-caret-position="109">
+          <caret line="285" column="27" lean-forward="true" selection-start-line="285" selection-start-column="27" selection-end-line="285" selection-end-column="27" />
         </state>
       </provider>
     </entry>

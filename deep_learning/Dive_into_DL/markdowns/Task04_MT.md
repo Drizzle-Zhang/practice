@@ -155,6 +155,8 @@ Y = tensor([[   1,  258, 1337,   40, 1198,   13,    2,    0],
 Valid lengths for Y = tensor([7, 8])
 ```
 
+> Tips：单词转化为词向量是模型结构的一部分，词向量层一般作为网络的第一层。
+
 ## Encoder-Decoder
 
 可以应用在对话系统、生成式任务中。 
@@ -401,7 +403,12 @@ train_ch7(model, train_iter, lr, num_epochs, ctx)
 ```
 
 ```
-
+epoch   50,loss 0.092, time 30.2 sec
+epoch  100,loss 0.045, time 29.8 sec
+epoch  150,loss 0.032, time 29.9 sec
+epoch  200,loss 0.026, time 30.0 sec
+epoch  250,loss 0.025, time 29.4 sec
+epoch  300,loss 0.024, time 28.6 sec
 ```
 
 #### 测试
@@ -438,16 +445,22 @@ for sentence in ['Go .', 'Wow !', "I'm OK .", 'I won !']:
 ```
 
 ```
-
+Go . => va !
+Wow ! => <unk> !
+I'm OK . => je vais bien .
+I won ! => j'ai gagné !
 ```
 
 ### Beam Search
 
 简单greedy search：
 
+取得分最高的单词输出，只考虑了局部最优，没有考虑全局最优，即这些单词可能不构成一个完整的句子。
+
 ![Image Name](https://cdn.kesci.com/upload/image/q5jchqoppn.png?imageView2/0/w/440/h/440)
 
-维特比算法：选择整体分数最高的句子（搜索空间太大）
+维特比算法：把所有单词都组成句子试一遍，选择整体分数最高的句子（搜索空间太大）
+
 集束搜索：
 
 ![Image Name](https://cdn.kesci.com/upload/image/q5jcia86z1.png?imageView2/0/w/640/h/640)
