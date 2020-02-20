@@ -561,7 +561,7 @@ epoch 250, perplexity 1.020480, time 0.22 sec
 
 其主要形式如下图所示（图片均来自台大李宏毅教授的PPT）：
 
-![]()
+![](https://github.com/Drizzle-Zhang/practice/blob/master/deep_learning/Dive_into_DL/materials/Task03/RNN.jpg)
 
 这里：  
 
@@ -577,11 +577,139 @@ epoch 250, perplexity 1.020480, time 0.22 sec
 
 通过序列形式的输入，我们能够得到如下形式的RNN。
 
+![](https://github.com/Drizzle-Zhang/practice/blob/master/deep_learning/Dive_into_DL/materials/Task03/RNN2.jpg)
+
 ### LSTM结构梳理
 
 长短期记忆（Long short-term memory, LSTM）是一种特殊的RNN，主要是为了解决长序列训练过程中的梯度消失和梯度爆炸问题。简单来说，就是相比普通的RNN，LSTM能够在更长的序列中有更好的表现。  
 
-
-
 LSTM结构（图右）和普通RNN的主要输入输出区别如下所示。
 
+![](https://github.com/Drizzle-Zhang/practice/blob/master/deep_learning/Dive_into_DL/materials/Task03/LSTM1.jpg)
+
+相比RNN只有一个传递状态  ![[公式]](https://www.zhihu.com/equation?tex=h%5Et+) ，LSTM有两个传输状态，一个  ![[公式]](https://www.zhihu.com/equation?tex=c%5Et) （cell state），和一个  ![[公式]](https://www.zhihu.com/equation?tex=h%5Et) （hidden state）。（Tips：RNN中的 ![[公式]](https://www.zhihu.com/equation?tex=h%5Et) 对于LSTM中的 ![[公式]](https://www.zhihu.com/equation?tex=c%5Et) ）  
+
+其中对于传递下去的 ![[公式]](https://www.zhihu.com/equation?tex=c%5Et) 改变得很慢，通常输出的 ![[公式]](https://www.zhihu.com/equation?tex=c%5Et) 是上一个状态传过来的 ![[公式]](https://www.zhihu.com/equation?tex=c%5E%7Bt-1%7D) 加上一些数值。  
+
+而 ![[公式]](https://www.zhihu.com/equation?tex=h%5Et) 则在不同节点下往往会有很大的区别。
+
+下面具体对LSTM的内部结构来进行剖析。 
+
+首先使用LSTM的当前输入 ![[公式]](https://www.zhihu.com/equation?tex=x%5Et) 和上一个状态传递下来的 ![[公式]](https://www.zhihu.com/equation?tex=h%5E%7Bt-1%7D) 拼接训练得到四个状态。
+
+![](https://github.com/Drizzle-Zhang/practice/blob/master/deep_learning/Dive_into_DL/materials/Task03/LSTM2.jpg)
+
+![](https://github.com/Drizzle-Zhang/practice/blob/master/deep_learning/Dive_into_DL/materials/Task03/LSTM3.jpg)
+
+其中， ![[公式]](https://www.zhihu.com/equation?tex=z%5Ef+) ， ![[公式]](https://www.zhihu.com/equation?tex=z%5Ei) ，![[公式]](https://www.zhihu.com/equation?tex=z%5Eo) 是由拼接向量乘以权重矩阵之后，再通过一个 ![[公式]](https://www.zhihu.com/equation?tex=sigmoid+) 激活函数转换成0到1之间的数值，来作为一种门控状态。而  ![[公式]](https://www.zhihu.com/equation?tex=z)  则是将结果通过一个 ![[公式]](https://www.zhihu.com/equation?tex=tanh) 激活函数将转换成-1到1之间的值（这里使用 ![[公式]](https://www.zhihu.com/equation?tex=tanh) 是因为这里是将其做为输入数据，而不是门控信号）。  
+
+**下面开始进一步介绍这四个状态在LSTM内部的使用。**
+
+![](https://github.com/Drizzle-Zhang/practice/blob/master/deep_learning/Dive_into_DL/materials/Task03/LSTM4.jpg)
+
+![[公式]](https://www.zhihu.com/equation?tex=%5Codot) 是Hadamard Product，也就是操作矩阵中对应的元素相乘，因此要求两个相乘矩阵是同型的。 ![[公式]](https://www.zhihu.com/equation?tex=%5Coplus) 则代表进行矩阵加法。
+
+LSTM内部主要有三个阶段： 
+
+1. 忘记阶段。这个阶段主要是对上一个节点传进来的输入进行**选择性**忘记。简单来说就是会 “忘记不重要的，记住重要的”。  具体来说是通过计算得到的 ![[公式]](https://www.zhihu.com/equation?tex=z%5Ef) （f表示forget）来作为忘记门控，来控制上一个状态的 ![[公式]](https://www.zhihu.com/equation?tex=c%5E%7Bt-1%7D) 哪些需要留哪些需要忘。  
+
+2. 选择记忆阶段。这个阶段将这个阶段的输入有选择性地进行“记忆”。主要是会对输入  ![[公式]](https://www.zhihu.com/equation?tex=x%5Et)  进行选择记忆。哪些重要则着重记录下来，哪些不重要，则少记一些。当前的输入内容由前面计算得到的  ![[公式]](https://www.zhihu.com/equation?tex=z+)  表示。而选择的门控信号则是由 ![[公式]](https://www.zhihu.com/equation?tex=z%5Ei) （i代表information）来进行控制。将上面两步得到的结果相加，即可得到传输给下一个状态的 ![[公式]](https://www.zhihu.com/equation?tex=c%5Et) 。也就是上图中的第一个公式。   
+
+3. 输出阶段。这个阶段将决定哪些将会被当成当前状态的输出。主要是通过  ![[公式]](https://www.zhihu.com/equation?tex=z%5Eo)  来进行控制的。并且还对上一阶段得到的 ![[公式]](https://www.zhihu.com/equation?tex=c%5Eo) 进行了放缩（通过一个tanh激活函数进行变化）。  
+
+与普通RNN类似，输出 ![[公式]](https://www.zhihu.com/equation?tex=y%5Et) 往往最终也是通过 ![[公式]](https://www.zhihu.com/equation?tex=h%5Et) 变化得到。 
+
+参考：[人人都能看懂的LSTM](https://zhuanlan.zhihu.com/p/32085405)
+
+## 5 GRU的理论理解
+
+GRU（Gate Recurrent Unit）是循环神经网络（Recurrent Neural Network, RNN）的一种。和LSTM（Long-Short Term Memory）一样，也是为了解决长期记忆和反向传播中的梯度等问题而提出来的。
+
+相比LSTM，使用GRU能够达到相当的效果，并且相比之下更容易进行训练，能够很大程度上提高训练效率，因此很多时候会更倾向于使用GRU。
+
+### GRU的输入输出结构
+
+GRU的输入输出结构与普通的RNN是一样的。
+
+有一个当前的输入 ![[公式]](https://www.zhihu.com/equation?tex=x%5Et) ，和上一个节点传递下来的隐状态（hidden state） ![[公式]](https://www.zhihu.com/equation?tex=h%5E%7Bt-1%7D) ，这个隐状态包含了之前节点的相关信息。
+
+结合 ![[公式]](https://www.zhihu.com/equation?tex=x%5Et+) 和 ![[公式]](https://www.zhihu.com/equation?tex=h%5E%7Bt-1%7D)，GRU会得到当前隐藏节点的输出 ![[公式]](https://www.zhihu.com/equation?tex=y%5Et+) 和传递给下一个节点的隐状态 ![[公式]](https://www.zhihu.com/equation?tex=h%5Et) 。
+
+![](https://github.com/Drizzle-Zhang/practice/blob/master/deep_learning/Dive_into_DL/materials/Task03/GRU1.jpg)
+
+### GRU的内部结构
+
+首先，我们先通过上一个传输下来的状态 ![[公式]](https://www.zhihu.com/equation?tex=h%5E%7Bt-1%7D) 和当前节点的输入 ![[公式]](https://www.zhihu.com/equation?tex=x%5Et) 来获取两个门控状态。如下图2-2所示，其中 ![[公式]](https://www.zhihu.com/equation?tex=r+) 控制重置的门控（reset gate）， ![[公式]](https://www.zhihu.com/equation?tex=z) 为控制更新的门控（update gate）。
+
+> Tips： ![[公式]](https://www.zhihu.com/equation?tex=%5Csigma) 为*[sigmoid](https://link.zhihu.com/?target=https%3A//en.wikipedia.org/wiki/Sigmoid_function)*函数，通过这个函数可以将数据变换为0-1范围内的数值，从而来充当门控信号。
+
+![](https://github.com/Drizzle-Zhang/practice/blob/master/deep_learning/Dive_into_DL/materials/Task03/GRU2.jpg)
+
+**与LSTM分明的层次结构不同，下面将对GRU进行一气呵成的介绍~~~ 请大家屏住呼吸，不要眨眼。**
+
+得到门控信号之后，首先使用重置门控来得到**“重置”**之后的数据 ![[公式]](https://www.zhihu.com/equation?tex=%7Bh%5E%7Bt-1%7D%7D%27+%3D+h%5E%7Bt-1%7D+%5Codot+r+) ，再将 ![[公式]](https://www.zhihu.com/equation?tex=%7Bh%5E%7Bt-1%7D%7D%27) 与输入 ![[公式]](https://www.zhihu.com/equation?tex=x%5Et+) 进行拼接，再通过一个[tanh](https://link.zhihu.com/?target=https%3A//baike.baidu.com/item/tanh)激活函数来将数据放缩到**-1~1**的范围内。即得到如下图2-3所示的 ![[公式]](https://www.zhihu.com/equation?tex=h%27) 。
+
+![](https://github.com/Drizzle-Zhang/practice/blob/master/deep_learning/Dive_into_DL/materials/Task03/GRU3.jpg)
+
+这里的 ![[公式]](https://www.zhihu.com/equation?tex=h%27+) 主要是包含了当前输入的 ![[公式]](https://www.zhihu.com/equation?tex=x%5Et) 数据。有针对性地对 ![[公式]](https://www.zhihu.com/equation?tex=h%27) 添加到当前的隐藏状态，相当于”记忆了当前时刻的状态“。类似于LSTM的选择记忆阶段（参照我的上一篇文章）。
+
+![](https://github.com/Drizzle-Zhang/practice/blob/master/deep_learning/Dive_into_DL/materials/Task03/GRU4.jpg)
+
+![[公式]](https://www.zhihu.com/equation?tex=%5Codot) 是Hadamard Product，也就是操作矩阵中对应的元素相乘，因此要求两个相乘矩阵是同型的。 ![[公式]](https://www.zhihu.com/equation?tex=%5Coplus) 则代表进行矩阵加法操作。
+
+最后介绍GRU最关键的一个步骤，我们可以称之为**”更新记忆“**阶段。
+
+在这个阶段，我们同时进行了遗忘和记忆两个步骤。我们使用了先前得到的更新门控 ![[公式]](https://www.zhihu.com/equation?tex=z) （update gate）。
+
+**更新表达式**： ![[公式]](https://www.zhihu.com/equation?tex=h%5Et+%3D+z+%5Codot+h%5E%7Bt-1%7D+%2B+%281+-+z%29%5Codot+h%27) 
+
+首先再次强调一下，门控信号（这里的 ![[公式]](https://www.zhihu.com/equation?tex=z) ）的范围为0~1。门控信号越接近1，代表”记忆“下来的数据越多；而越接近0则代表”遗忘“的越多。
+
+
+
+GRU很聪明的一点就在于，**我们使用了同一个门控 ![[公式]](https://www.zhihu.com/equation?tex=z) 就同时可以进行遗忘和选择记忆（LSTM则要使用多个门控）**。
+
+- ![[公式]](https://www.zhihu.com/equation?tex=z+%5Codot+h%5E%7Bt-1%7D) ：表示对原本隐藏状态的选择性“遗忘”。这里的 ![[公式]](https://www.zhihu.com/equation?tex=z) 可以想象成遗忘门（forget gate），忘记 ![[公式]](https://www.zhihu.com/equation?tex=h%5E%7Bt-1%7D) 维度中一些不重要的信息。
+- ![[公式]](https://www.zhihu.com/equation?tex=%281-z%29+%5Codot+h%27) ： 表示对包含当前节点信息的 ![[公式]](https://www.zhihu.com/equation?tex=h%27) 进行选择性”记忆“。与上面类似，这里的 ![[公式]](https://www.zhihu.com/equation?tex=%281-z%29) 同理会忘记 ![[公式]](https://www.zhihu.com/equation?tex=h+%27) 维度中的一些不重要的信息。或者，这里我们更应当看做是对 ![[公式]](https://www.zhihu.com/equation?tex=h%27+) 维度中的某些信息进行选择。
+- ![[公式]](https://www.zhihu.com/equation?tex=h%5Et+%3D+z+%5Codot+h%5E%7Bt-1%7D+%2B+%281+-+z%29%5Codot+h%27) ：结合上述，这一步的操作就是忘记传递下来的 ![[公式]](https://www.zhihu.com/equation?tex=h%5E%7Bt-1%7D+) 中的某些维度信息，并加入当前节点输入的某些维度信息。
+
+可以看到，这里的遗忘 ![[公式]](https://www.zhihu.com/equation?tex=z) 和选择 ![[公式]](https://www.zhihu.com/equation?tex=%281-z%29) 是联动的。也就是说，对于传递进来的维度信息，我们会进行选择性遗忘，则遗忘了多少权重 （![[公式]](https://www.zhihu.com/equation?tex=z) ），我们就会使用包含当前输入的 ![[公式]](https://www.zhihu.com/equation?tex=h%27) 中所对应的权重进行弥补 ![[公式]](https://www.zhihu.com/equation?tex=%281-z%29) 。以保持一种”恒定“状态。
+
+### LSTM与GRU的关系
+
+大家看到 ![[公式]](https://www.zhihu.com/equation?tex=r) (reset gate)实际上与他的名字有点不符。我们仅仅使用它来获得了 ![[公式]](https://www.zhihu.com/equation?tex=h%E2%80%99) 。
+
+那么这里的 ![[公式]](https://www.zhihu.com/equation?tex=h%27) 实际上可以看成对应于LSTM中的hidden state；上一个节点传下来的 ![[公式]](https://www.zhihu.com/equation?tex=h%5E%7Bt-1%7D) 则对应于LSTM中的cell state。z对应的则是LSTM中的 ![[公式]](https://www.zhihu.com/equation?tex=z%5Ef) forget gate，那么 ![[公式]](https://www.zhihu.com/equation?tex=%281-z%29) 我们似乎就可以看成是选择门 ![[公式]](https://www.zhihu.com/equation?tex=z%5Ei) 了。
+
+参考：[人人都能看懂的GRU](https://zhuanlan.zhihu.com/p/32481747)
+
+## 6 GRU的实现
+
+RNN存在的问题：梯度较容易出现衰减或爆炸（BPTT）  
+⻔控循环神经⽹络：捕捉时间序列中时间步距离较⼤的依赖关系  
+**RNN**:  
+
+
+![Image Name](https://cdn.kesci.com/upload/image/q5jjvcykud.png?imageView2/0/w/320/h/320)
+
+
+$$
+H_{t} = ϕ(X_{t}W_{xh} + H_{t-1}W_{hh} + b_{h})
+$$
+**GRU**:
+
+
+![Image Name](https://cdn.kesci.com/upload/image/q5jk0q9suq.png?imageView2/0/w/640/h/640)
+
+
+
+$$
+R_{t} = σ(X_tW_{xr} + H_{t−1}W_{hr} + b_r)\\    
+Z_{t} = σ(X_tW_{xz} + H_{t−1}W_{hz} + b_z)\\  
+\widetilde{H}_t = tanh(X_tW_{xh} + (R_t ⊙H_{t−1})W_{hh} + b_h)\\
+H_t = Z_t⊙H_{t−1} + (1−Z_t)⊙\widetilde{H}_t
+$$
+• 重置⻔有助于捕捉时间序列⾥短期的依赖关系；  
+• 更新⻔有助于捕捉时间序列⾥⻓期的依赖关系。    
+
+### 载入数据集
