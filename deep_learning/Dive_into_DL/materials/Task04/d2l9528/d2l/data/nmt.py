@@ -8,7 +8,7 @@ from .base import Vocab
 
 __all__  = ['load_data_nmt']
 
-def load_data_nmt(batch_size, max_len, num_examples=1000):
+def load_data_nmt(path_data, batch_size, max_len, num_examples=1000):
     """Download an NMT dataset, return its vocabulary and data iterator."""
     # Download and preprocess
     def preprocess_raw(text):
@@ -21,7 +21,7 @@ def load_data_nmt(batch_size, max_len, num_examples=1000):
         return out 
 
 
-    with open('/home/kesci/input/fraeng6506/fra.txt', 'r') as f:
+    with open(path_data, 'r') as f:
       raw_text = f.read()
 
 

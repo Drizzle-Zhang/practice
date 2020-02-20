@@ -713,3 +713,378 @@ $$
 • 更新⻔有助于捕捉时间序列⾥⻓期的依赖关系。    
 
 ### 载入数据集
+
+```python
+import numpy as np
+import torch
+from torch import nn, optim
+import torch.nn.functional as F
+import sys
+sys.path.append("../input/")
+import d2l_jay9460 as d2l
+device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+
+
+def load_data_jay_lyrics():
+    path_text = '/home/zy/my_git/practice/deep_learning/Dive_into_DL/' \
+                'materials/Task02/jaychou_lyrics.txt'
+    with open(path_text, 'r', encoding='utf-8') as f:
+        corpus_chars = f.read()
+    corpus_chars = corpus_chars.replace('\n', ' ').replace('\r', ' ')
+    corpus_chars = corpus_chars[0:10000]
+    idx_to_char = list(set(corpus_chars))
+    char_to_idx = dict([(char, i) for i, char in enumerate(idx_to_char)])
+    vocab_size = len(char_to_idx)
+    corpus_indices = [char_to_idx[char] for char in corpus_chars]
+    return corpus_indices, char_to_idx, idx_to_char, vocab_size
+
+
+(corpus_indices, char_to_idx, idx_to_char, vocab_size) = load_data_jay_lyrics()
+```
+
+### 初始化参数
+
+```python
+# 初始化参数
+num_inputs, num_hiddens, num_outputs = vocab_size, 256, vocab_size
+# print('will use', device)
+
+
+def get_params():
+    def _one(shape):
+        ts = torch.tensor(np.random.normal(0, 0.01, size=shape), device=device,
+                          dtype=torch.float32)  # 正态分布
+        return torch.nn.Parameter(ts, requires_grad=True)
+
+    def _three():
+        return (_one((num_inputs, num_hiddens)),
+                _one((num_hiddens, num_hiddens)),
+                torch.nn.Parameter(torch.zeros(num_hiddens, device=device,
+                                               dtype=torch.float32),
+                                   requires_grad=True))
+
+    W_xz, W_hz, b_z = _three()  # 更新门参数
+    W_xr, W_hr, b_r = _three()  # 重置门参数
+    W_xh, W_hh, b_h = _three()  # 候选隐藏状态参数
+
+    # 输出层参数
+    W_hq = _one((num_hiddens, num_outputs))
+    b_q = torch.nn.Parameter(
+        torch.zeros(num_outputs, device=device, dtype=torch.float32),
+        requires_grad=True)
+    return nn.ParameterList(
+        [W_xz, W_hz, b_z, W_xr, W_hr, b_r, W_xh, W_hh, b_h, W_hq, b_q])
+
+
+def init_gru_state(batch_size, num_hiddens, device):  # 隐藏状态初始化
+    return (torch.zeros((batch_size, num_hiddens), device=device),)
+
+```
+
+### GRU模型
+
+```python
+# GRU模型
+def gru(inputs, state, params):
+    W_xz, W_hz, b_z, W_xr, W_hr, b_r, W_xh, W_hh, b_h, W_hq, b_q = params
+    H, = state
+    outputs = []
+    for X in inputs:
+        Z = torch.sigmoid(torch.matmul(X, W_xz) + torch.matmul(H, W_hz) + b_z)
+        R = torch.sigmoid(torch.matmul(X, W_xr) + torch.matmul(H, W_hr) + b_r)
+        H_tilda = torch.tanh(torch.matmul(X, W_xh) + R * torch.matmul(H, W_hh) + b_h)
+        H = Z * H + (1 - Z) * H_tilda
+        Y = torch.matmul(H, W_hq) + b_q
+        outputs.append(Y)
+    return outputs, (H,)
+```
+
+### 训练模型
+
+```python
+# 训练模型
+num_epochs, num_steps, batch_size, lr, clipping_theta = \
+    160, 35, 32, 1e2, 1e-2
+pred_period, pred_len, prefixes = 40, 50, ['分开', '不分开']
+d2l.train_and_predict_rnn(gru, get_params, init_gru_state, num_hiddens,
+                          vocab_size, device, corpus_indices, idx_to_char,
+                          char_to_idx, False, num_epochs, num_steps, lr,
+                          clipping_theta, batch_size, pred_period, pred_len,
+                          prefixes)
+
+```
+
+```
+epoch 40, perplexity 154.950742, time 0.91 sec
+ - 分开 我想你的让我的爱爱人 我想你的让我不 我想你的让我不想想想想想你想你的爱爱人 我想你的让我不 我想
+ - 不分开 我想你的让我不 我想你的让我不想想想想想你想你的爱爱人 我想你的让我不 我想你的让我不想想想想想你
+epoch 80, perplexity 33.035831, time 0.71 sec
+ - 分开 一直在人截棍 哼哼哈兮 快使用双截棍 哼哼哈兮 快使用双截棍 哼哼哈兮 快使用双截棍 哼哼哈兮 快
+ - 不分开 爱你在我不多 让你在我 别你 这样的节笑 你说 却想我 别你的手 我不要再想 我不要再想 我不要再
+epoch 120, perplexity 4.981806, time 0.85 sec
+ - 分开我 一定球 快沉我抬起 一直走 停给我抬开头 有话去对医药箱说 别怪我 别怪我 说你怎么面对我 甩开
+ - 不分开  我来你烦 我有多烦恼  没有你在我有多难熬多恼  没有你烦 我有多烦恼  没有你在我有多难熬多恼
+epoch 160, perplexity 1.465822, time 0.86 sec
+ - 分开 一个中酒 你的它美主义 还生水起 快使用双截棍 哼哼哈兮 快使用双截棍 哼哼哈兮 快使用双截棍 哼
+ - 不分开 你已经离 我不多烦恼  没有你烦我有多烦恼多难熬  穿过云层 我试著努力向你奔跑 爱才送到 你却已
+```
+
+### 简洁实现
+
+```python
+num_hiddens=256
+num_epochs, num_steps, batch_size, lr, clipping_theta = 160, 35, 32, 1e2, 1e-2
+pred_period, pred_len, prefixes = 40, 50, ['分开', '不分开']
+
+lr = 1e-2 # 注意调整学习率
+gru_layer = nn.GRU(input_size=vocab_size, hidden_size=num_hiddens)
+model = d2l.RNNModel(gru_layer, vocab_size).to(device)
+d2l.train_and_predict_rnn_pytorch(model, num_hiddens, vocab_size, device,
+                                corpus_indices, idx_to_char, char_to_idx,
+                                num_epochs, num_steps, lr, clipping_theta,
+                                batch_size, pred_period, pred_len, prefixes)
+```
+
+```
+epoch 40, perplexity 1.020338, time 0.46 sec
+ - 分开始想像 爸和妈当年的模样 说著一口吴侬软语的姑娘缓缓走过外滩 消失的 旧时光 一九四三 回头看 的片
+ - 不分开始 担心今天的你过得好不好 整个画面是你 想你想的睡不著 嘴嘟嘟那可爱的模样 还有在你身上香香的味道
+epoch 80, perplexity 1.013508, time 0.45 sec
+ - 分开始想要 我的快乐是你 想你想的都会笑 没有你在 我有多难熬  没有你在我有多难熬多烦恼  没有你烦
+ - 不分开不可以简简单单没有伤害 你 靠着我的肩膀 你 在我胸口睡著 像这样的生活 我爱你 你爱我 我想大声宣
+epoch 120, perplexity 1.008346, time 0.49 sec
+ - 分开始想像 爸和妈当年的模样 说著一口吴侬软语的姑娘缓缓走过外滩 消失的 旧时光 一九四三 在回忆 的路
+ - 不分开始 担心今天的你过得好不好 整个画面是你 想你想的睡不著 嘴嘟嘟那可爱的模样 还有在你身上香香的味道
+epoch 160, perplexity 1.008036, time 0.45 sec
+ - 分开始的话 你甘会听 不要再这样打我妈妈 难道你手不会痛吗 其实我回家就想要阻止一切 让家庭回到过去甜甜
+ - 不分开始 担心今天的你过得好不好 整个画面是你 想你想的睡不著 嘴嘟嘟那可爱的模样 还有在你身上香香的味道
+```
+
+## 7 LSTM的实现
+
+长短期记忆long short-term memory :  
+遗忘门:控制上一时间步的记忆细胞 
+输入门:控制当前时间步的输入  
+输出门:控制从记忆细胞到隐藏状态  
+记忆细胞：⼀种特殊的隐藏状态的信息的流动  
+
+
+![Image Name](https://cdn.kesci.com/upload/image/q5jk2bnnej.png?imageView2/0/w/640/h/640)
+
+$$
+I_t = σ(X_tW_{xi} + H_{t−1}W_{hi} + b_i) \\
+F_t = σ(X_tW_{xf} + H_{t−1}W_{hf} + b_f)\\
+O_t = σ(X_tW_{xo} + H_{t−1}W_{ho} + b_o)\\
+\widetilde{C}_t = tanh(X_tW_{xc} + H_{t−1}W_{hc} + b_c)\\
+C_t = F_t ⊙C_{t−1} + I_t ⊙\widetilde{C}_t\\
+H_t = O_t⊙tanh(C_t)
+$$
+
+### 初始化参数
+
+```python
+num_inputs, num_hiddens, num_outputs = vocab_size, 256, vocab_size
+print('will use', device)
+
+
+def get_params():
+    def _one(shape):
+        ts = torch.tensor(np.random.normal(0, 0.01, size=shape), device=device,
+                          dtype=torch.float32)
+        return torch.nn.Parameter(ts, requires_grad=True)
+
+    def _three():
+        return (_one((num_inputs, num_hiddens)),
+                _one((num_hiddens, num_hiddens)),
+                torch.nn.Parameter(torch.zeros(num_hiddens, device=device,
+                                               dtype=torch.float32),
+                                   requires_grad=True))
+
+    W_xi, W_hi, b_i = _three()  # 输入门参数
+    W_xf, W_hf, b_f = _three()  # 遗忘门参数
+    W_xo, W_ho, b_o = _three()  # 输出门参数
+    W_xc, W_hc, b_c = _three()  # 候选记忆细胞参数
+
+    # 输出层参数
+    W_hq = _one((num_hiddens, num_outputs))
+    b_q = torch.nn.Parameter(
+        torch.zeros(num_outputs, device=device, dtype=torch.float32),
+        requires_grad=True)
+    return nn.ParameterList(
+        [W_xi, W_hi, b_i, W_xf, W_hf, b_f, W_xo, W_ho, b_o, W_xc, W_hc, b_c,
+         W_hq, b_q])
+
+
+def init_lstm_state(batch_size, num_hiddens, device):
+    return (torch.zeros((batch_size, num_hiddens), device=device),
+            torch.zeros((batch_size, num_hiddens), device=device))
+
+```
+
+### LSTM模型
+
+```python
+def lstm(inputs, state, params):
+    [W_xi, W_hi, b_i, W_xf, W_hf, b_f, W_xo, W_ho, b_o, W_xc, W_hc, b_c, W_hq, b_q] = params
+    (H, C) = state
+    outputs = []
+    for X in inputs:
+        I = torch.sigmoid(torch.matmul(X, W_xi) + torch.matmul(H, W_hi) + b_i)
+        F = torch.sigmoid(torch.matmul(X, W_xf) + torch.matmul(H, W_hf) + b_f)
+        O = torch.sigmoid(torch.matmul(X, W_xo) + torch.matmul(H, W_ho) + b_o)
+        C_tilda = torch.tanh(torch.matmul(X, W_xc) + torch.matmul(H, W_hc) + b_c)
+        C = F * C + I * C_tilda
+        H = O * C.tanh()
+        Y = torch.matmul(H, W_hq) + b_q
+        outputs.append(Y)
+    return outputs, (H, C)
+```
+
+### 训练模型
+
+```python
+num_epochs, num_steps, batch_size, lr, clipping_theta = 160, 35, 32, 1e2, 1e-2
+pred_period, pred_len, prefixes = 40, 50, ['分开', '不分开']
+
+d2l.train_and_predict_rnn(lstm, get_params, init_lstm_state, num_hiddens,
+                          vocab_size, device, corpus_indices, idx_to_char,
+                          char_to_idx, False, num_epochs, num_steps, lr,
+                          clipping_theta, batch_size, pred_period, pred_len,
+                          prefixes)
+```
+
+```
+epoch 40, perplexity 211.108955, time 1.13 sec
+ - 分开 我不的我 我不的我 我不的我 我不的我 我不的我 我不的我 我不的我 我不的我 我不的我 我不的我
+ - 不分开 我不的我 我不的我 我不的我 我不的我 我不的我 我不的我 我不的我 我不的我 我不的我 我不的我
+epoch 80, perplexity 63.426335, time 1.14 sec
+ - 分开 我想你的你 我不要这我 我不要我 我不要我 我不不觉 我不不觉 我不不觉 我不不觉 我不不觉 我不
+ - 不分开 我想你的你 我不要这我 我不要我 我不要我 我不不觉 我不不觉 我不不觉 我不不觉 我不不觉 我不
+epoch 120, perplexity 15.437350, time 1.16 sec
+ - 分开 你说你的太笑 我 却你你的你笑 像这样 说你的睛笑 就你 你想很久了吧? 我想你 你给我 说你 是
+ - 不分开 我想你你已经 有你 在不样的太笑 我想想你想想 我想 你不 我不 我不 我不 我不要 爱你的对快快
+epoch 160, perplexity 4.124116, time 1.05 sec
+ - 分开 我已带你 我有一定婆 一起看起 你知了这我 我知好好生活 一静悄觉 又过了一个秋 后知后觉 我该好
+ - 不分开 你已经你 我跟好好熬我 我该好觉生活 静静悄觉默离离到 在入了危默怪到  却去了了我不要难熬烦我
+```
+
+### 简洁实现
+
+```python
+num_hiddens=256
+num_epochs, num_steps, batch_size, lr, clipping_theta = 160, 35, 32, 1e2, 1e-2
+pred_period, pred_len, prefixes = 40, 50, ['分开', '不分开']
+
+lr = 1e-2 # 注意调整学习率
+lstm_layer = nn.LSTM(input_size=vocab_size, hidden_size=num_hiddens)
+model = d2l.RNNModel(lstm_layer, vocab_size)
+d2l.train_and_predict_rnn_pytorch(model, num_hiddens, vocab_size, device,
+                                corpus_indices, idx_to_char, char_to_idx,
+                                num_epochs, num_steps, lr, clipping_theta,
+                                batch_size, pred_period, pred_len, prefixes)
+```
+
+```
+epoch 40, perplexity 1.021080, time 0.52 sec
+ - 分开始移动 一阵莫名感动 我想带你看着我的肩膀 你 在我胸口睡著 像这样的生活 我爱你 你爱我 我想大声
+ - 不分开始打呼啸而过 是谁说没有 有一条热昏头的响尾蛇 无力的躺在干枯的河 在等待雨季来临变沼泽 灰狼啃食著
+epoch 80, perplexity 1.016574, time 0.52 sec
+ - 分开始移动 一阵莫名感动 我想带你看着我的手不放开 爱能不能够永远单纯没有悲哀 我 想带你骑单车 我 想
+ - 不分开始打呼雨  是一场悲剧 我可以让生命就这样毫无意义 或许在最后能听到你一句 轻轻的叹息  后悔着对不
+epoch 120, perplexity 1.008828, time 0.52 sec
+ - 分开始打呼 管家是一只会说法语举止优雅的猪 吸血前会念约翰福音做为弥补 拥有一双蓝色眼睛的凯萨琳公主 专
+ - 不分开始打呼啸管家是一是那么 你想就这样牵着你的手不放开 爱能不能够永远单纯没有悲哀 我 想带你骑单车 我
+epoch 160, perplexity 1.010719, time 0.52 sec
+ - 分开始玩笑 想通 却又再考倒我 说散 你想很久了吧? 败给你的黑色幽默 说散 你想很久了吧? 我的认真败
+ - 不分开 爱能不能够永远单纯没有悲哀 我 想带你骑单车 我 想和你看棒球 想这样没担忧 唱着歌 一直走 我想
+```
+
+## 8 深度循环神经网络
+
+![Image Name](https://cdn.kesci.com/upload/image/q5jk3z1hvz.png?imageView2/0/w/320/h/320)
+
+
+$$
+\boldsymbol{H}_t^{(1)} = \phi(\boldsymbol{X}_t \boldsymbol{W}_{xh}^{(1)} + \boldsymbol{H}_{t-1}^{(1)} \boldsymbol{W}_{hh}^{(1)} + \boldsymbol{b}_h^{(1)})\\
+\boldsymbol{H}_t^{(\ell)} = \phi(\boldsymbol{H}_t^{(\ell-1)} \boldsymbol{W}_{xh}^{(\ell)} + \boldsymbol{H}_{t-1}^{(\ell)} \boldsymbol{W}_{hh}^{(\ell)} + \boldsymbol{b}_h^{(\ell)})\\
+\boldsymbol{O}_t = \boldsymbol{H}_t^{(L)} \boldsymbol{W}_{hq} + \boldsymbol{b}_q
+$$
+深度循环神经网络的层数并不是越多越好
+
+```python
+num_hiddens=256
+num_epochs, num_steps, batch_size, lr, clipping_theta = 160, 35, 32, 1e2, 1e-2
+pred_period, pred_len, prefixes = 40, 50, ['分开', '不分开']
+
+lr = 1e-2 # 注意调整学习率
+
+gru_layer = nn.LSTM(input_size=vocab_size, hidden_size=num_hiddens,num_layers=2)
+model = d2l.RNNModel(gru_layer, vocab_size).to(device)
+d2l.train_and_predict_rnn_pytorch(model, num_hiddens, vocab_size, device,
+                                corpus_indices, idx_to_char, char_to_idx,
+                                num_epochs, num_steps, lr, clipping_theta,
+                                batch_size, pred_period, pred_len, prefixes)
+```
+
+```
+epoch 40, perplexity 48.529632, time 0.94 sec
+ - 分开你 我不要再我的人不人的美两步三颗步四步的语截鸠 可爱女人 可爱女人 可爱女人 可爱女人 可爱女人
+ - 不分开的让我疯狂 我不要我 一子在美四棍 我想你 我不要我 一子在美四棍 我想你 我不要我 一子在美四棍
+epoch 80, perplexity 1.620074, time 0.96 sec
+ - 分开有了这样的甜蜜 让我开始乡相信命运 感谢地心引力 让我碰到你 漂亮的让我面红的可爱女人 温柔的让我心
+ - 不分开有了口让我感动的可爱女人 坏坏的让我疯狂的可爱女人 坏坏的让我疯狂的可爱女人 坏坏的让我疯狂的可爱女
+epoch 120, perplexity 1.064946, time 0.93 sec
+ - 分开有多难过 说你回方的可爱女人 温柔的让我心疼的可爱女人 透明的让我感动的可爱女人 坏坏的让我疯狂的可
+ - 不分开有多难过 说你眼  我不懂不说你说 想要你的微笑每天都能看到  我知道这里很美但家乡的你更美走过了很
+epoch 160, perplexity 1.023880, time 0.96 sec
+ - 分开有多难 我不知不觉 你已经离开我 不知不觉 我跟了这节奏 后知后觉 又过了一个秋 后知后觉 我该好好
+ - 不分开有多难  一直在掉落在 身找 还你连一九四三 泛黄的春联还残待雨季来临变沼泽 灰狼啃食著水鹿的骨头
+```
+
+## 2 双向循环神经网络
+
+双向循环神经网络是利用上下文的信息去构建语言模型
+
+![Image Name](https://cdn.kesci.com/upload/image/q5j8hmgyrz.png?imageView2/0/w/320/h/320)
+
+$$
+\begin{aligned} \overrightarrow{\boldsymbol{H}}_t &= \phi(\boldsymbol{X}_t \boldsymbol{W}_{xh}^{(f)} + \overrightarrow{\boldsymbol{H}}_{t-1} \boldsymbol{W}_{hh}^{(f)} + \boldsymbol{b}_h^{(f)})\\
+\overleftarrow{\boldsymbol{H}}_t &= \phi(\boldsymbol{X}_t \boldsymbol{W}_{xh}^{(b)} + \overleftarrow{\boldsymbol{H}}_{t+1} \boldsymbol{W}_{hh}^{(b)} + \boldsymbol{b}_h^{(b)}) \end{aligned}
+$$
+$$
+\boldsymbol{H}t=(\overrightarrow{\boldsymbol{H}}{t}, \overleftarrow{\boldsymbol{H}}_t)
+$$
+$$
+\boldsymbol{O}t = \boldsymbol{H}t \boldsymbol{W}{hq} + \boldsymbol{b}q
+$$
+```python
+num_hiddens=128
+num_epochs, num_steps, batch_size, lr, clipping_theta = 160, 35, 32, 1e-2, 1e-2
+pred_period, pred_len, prefixes = 40, 50, ['分开', '不分开']
+
+lr = 1e-2 # 注意调整学习率
+
+gru_layer = nn.GRU(input_size=vocab_size, hidden_size=num_hiddens,bidirectional=True)
+model = d2l.RNNModel(gru_layer, vocab_size).to(device)
+d2l.train_and_predict_rnn_pytorch(model, num_hiddens, vocab_size, device,
+                                corpus_indices, idx_to_char, char_to_idx,
+                                num_epochs, num_steps, lr, clipping_theta,
+                                batch_size, pred_period, pred_len, prefixes)
+```
+
+```
+epoch 40, perplexity 1.001762, time 0.66 sec
+ - 分开始开始开始开始开始开始开始开始开始开始开始开始开始开始开始开始开始开始开始开始开始开始开始开始开始开
+ - 不分开不开不开不开不开不开不开不开不开不开不开不开不开不开不开不开不开不开不开不开不开不开不开不开不开不开
+epoch 80, perplexity 1.000562, time 0.60 sec
+ - 分开始开始开始开始开始开始开始开始开始开始开始开始开始开始开始开始开始开始开始开始开始开始开始开始开始开
+ - 不分开不开不开不开不开不开不开不开不开不开不开不开不开不开不开不开不开不开不开不开不开不开不开不开不开不开
+epoch 120, perplexity 1.000281, time 0.60 sec
+ - 分开始开始开始开始开始开始开始开始开始开始开始开始开始开始开始开始开始开始开始开始开始开始开始开始开始开
+ - 不分开不开不开不开不开不开不开不开不开不开不开不开不开不开不开不开不开不开不开不开不开不开不开不开不开不开
+epoch 160, perplexity 1.000168, time 0.60 sec
+ - 分开始开始开始开始开始开始开始开始开始开始开始开始开始开始开始开始开始开始开始开始开始开始开始开始开始开
+ - 不分开不开不开不开不开不开不开不开不开不开不开不开不开不开不开不开不开不开不开不开不开不开不开不开不开不开
+```
+
+说明双向神经网络结果不一定好
