@@ -2,7 +2,10 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="3a723a8b-2392-4821-9586-2b4118ff67da" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/codes/AM.py" beforeDir="false" afterPath="$PROJECT_DIR$/codes/AM.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/codes/CNN_base.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/codes/LeNet.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/markdowns/Task05_CNN.md" beforeDir="false" afterPath="$PROJECT_DIR$/markdowns/Task05_CNN.md" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -22,25 +25,25 @@
       </usages-collector>
       <usages-collector id="statistics.file.extensions.open">
         <counts>
-          <entry key="py" value="12" />
+          <entry key="py" value="15" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.open">
         <counts>
-          <entry key="Python" value="12" />
+          <entry key="Python" value="15" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
           <entry key="Python Console" value="216" />
           <entry key="dummy" value="19" />
-          <entry key="py" value="2482" />
+          <entry key="py" value="2529" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
           <entry key="PLAIN_TEXT" value="19" />
-          <entry key="Python" value="2698" />
+          <entry key="Python" value="2745" />
         </counts>
       </usages-collector>
     </session>
@@ -72,6 +75,18 @@
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/codes/Multi-Perceptron.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="230">
+              <caret line="13" selection-start-line="11" selection-end-line="13" />
+              <folding>
+                <element signature="e#127#139#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/codes/MT.py">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="23">
@@ -80,14 +95,23 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/codes/AM.py">
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/codes/CNN_base.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="408">
-              <caret line="213" lean-forward="true" selection-start-line="7" selection-end-line="213" />
+            <state relative-caret-position="362">
+              <caret line="36" lean-forward="true" selection-start-line="36" selection-end-line="36" />
               <folding>
-                <element signature="e#112#123#0" expanded="true" />
+                <element signature="e#119#131#0" expanded="true" />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/codes/LeNet.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="302">
+              <caret line="158" lean-forward="true" selection-start-line="158" selection-end-line="158" />
             </state>
           </provider>
         </entry>
@@ -118,6 +142,8 @@
         <option value="$PROJECT_DIR$/codes/RNN.py" />
         <option value="$PROJECT_DIR$/codes/MT.py" />
         <option value="$PROJECT_DIR$/codes/AM.py" />
+        <option value="$PROJECT_DIR$/codes/CNN_base.py" />
+        <option value="$PROJECT_DIR$/codes/LeNet.py" />
       </list>
     </option>
   </component>
@@ -250,16 +276,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/codes/Multi-Perceptron.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-1288">
-          <caret line="10" column="10" selection-start-line="10" selection-start-column="10" selection-end-line="10" selection-end-column="10" />
-          <folding>
-            <element signature="e#127#139#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/codes/over_underfitting.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="230">
@@ -280,6 +296,16 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/codes/AM.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="164">
+          <caret line="207" column="6" selection-start-line="207" selection-start-column="6" selection-end-line="207" selection-end-column="6" />
+          <folding>
+            <element signature="e#112#123#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/codes/MT.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="23">
@@ -287,13 +313,30 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/codes/AM.py">
+    <entry file="file://$PROJECT_DIR$/codes/CNN_base.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="408">
-          <caret line="213" lean-forward="true" selection-start-line="7" selection-end-line="213" />
+        <state relative-caret-position="362">
+          <caret line="36" lean-forward="true" selection-start-line="36" selection-end-line="36" />
           <folding>
-            <element signature="e#112#123#0" expanded="true" />
+            <element signature="e#119#131#0" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/codes/Multi-Perceptron.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="230">
+          <caret line="13" selection-start-line="11" selection-end-line="13" />
+          <folding>
+            <element signature="e#127#139#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/codes/LeNet.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="302">
+          <caret line="158" lean-forward="true" selection-start-line="158" selection-end-line="158" />
         </state>
       </provider>
     </entry>
