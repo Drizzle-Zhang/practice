@@ -107,6 +107,8 @@ $$
 Z[i,:,:] = dot(X[i,:,:], Y[i,:,:])\qquad for\ i= 1,…,n\ .
 $$
 
+> 高维张量的矩阵乘法可用于并行计算多个位置的注意力分数。
+
 ```python
 torch.bmm(torch.ones((2,1,3), dtype = torch.float), torch.ones((2,3,2), dtype = torch.float))
 ```
@@ -231,6 +233,8 @@ tensor([[[ 2.0000,  3.0000,  4.0000,  5.0000]],
         [[10.0000, 11.0000, 12.0000, 13.0000]]], grad_fn=<BmmBackward>)
 ```
 
+> 在Dot-product Attention中，key与query维度需要一致，在MLP Attention中则不需要。
+
 ## 2 对注意力机制的理解
 
 ### Seq2Seq模型
@@ -290,6 +294,8 @@ $s_{t'-1}$: 解码器的解码器的 解码器的 $t'-1$时间步的隐藏状态
 [完全图解RNN、RNN变体、Seq2Seq、Attention机制](https://zhuanlan.zhihu.com/p/28054589)
 
 [Seq2seq模型及注意力机制](http://www.ryluo.cn/2020/02/17/Seq2seq模型及注意力机制/)
+
+[图解神经机器翻译中的注意力机制](https://zhuanlan.zhihu.com/p/56704058)
 
 ## 3 引入注意力机制的Seq2seq模型
 

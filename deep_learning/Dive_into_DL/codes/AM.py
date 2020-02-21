@@ -214,6 +214,7 @@ model = d2l.EncoderDecoder(encoder, decoder)
 
 sys.path.append('/home/zy/my_git/practice/deep_learning/Dive_into_DL/" \
            "materials/Task04/d2len9900')
+import d2l
 d2l.train_s2s_ch9(model, train_iter, lr, num_epochs, ctx)
 
 
