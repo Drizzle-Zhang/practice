@@ -1,6 +1,4 @@
-# 卷积神经网络（CNN）
-
-## 卷积神经网络基础
+# 卷积神经网络基础
 
 本节我们介绍卷积神经网络的基础概念，主要是卷积层和池化层，并解释填充、步幅、输入通道和输出通道的含义。
 
@@ -114,7 +112,7 @@ print(conv2d.weight.data)
 print(conv2d.bias.data)
 ```
 
-```
+```python
 conv2d = Conv2D(kernel_size=(1, 2))
 step = 30
 lr = 0.01
@@ -155,6 +153,8 @@ tensor([0.0009])
 二维卷积层输出的二维数组可以看作是输入在空间维度（宽和高）上某一级的表征，也叫特征图（feature map）。影响元素$x$的前向计算的所有可能输入区域（可能大于输入的实际尺寸）叫做$x$的感受野（receptive field）。
 
 以图1为例，输入中阴影部分的四个元素是输出中阴影部分元素的感受野。我们将图中形状为$2 \times 2$的输出记为$Y$，将$Y$与另一个形状为$2 \times 2$的核数组做互相关运算，输出单个元素$z$。那么，$z$在$Y$上的感受野包括$Y$的全部四个元素，在输入上的感受野包括其中全部9个元素。可见，我们可以通过更深的卷积神经网络使特征图中单个元素的感受野变得更加广阔，从而捕捉输入上更大尺寸的特征。
+
+> 两个连续的3×3卷积核的感受野与一个5×5卷积核的感受野相同
 
 ### 填充和步幅
 
@@ -202,7 +202,7 @@ $$
 
 ### 多输入通道和多输出通道
 
-之前的输入和输出都是二维数组，但真实数据的维度经常更高。例如，彩色图像在高和宽2个维度外还有RGB（红、绿、蓝）3个颜色通道。假设彩色图像的高和宽分别是$h$和$w$（像素），那么它可以表示为一个$3 \times h \times w$的多维数组，我们将大小为3的这一维称为通道（channel）维。
+之前的输入和输出都是二维数组，但真实数据的维度经常更高。例如，**彩色图像在高和宽2个维度外还有RGB（红、绿、蓝）3个颜色通道**。假设彩色图像的高和宽分别是$h$和$w$（像素），那么它可以表示为一个$3 \times h \times w$的多维数组，我们将大小为3的这一维称为通道（channel）维。
 
 #### 多输入通道
 
@@ -325,7 +325,7 @@ tensor([[[[ 5.,  6.,  7.,  7.],
 
 平均池化层使用的是`nn.AvgPool2d`，使用方法与`nn.MaxPool2d`相同。
 
-##  Convolutional Neural Networks
+#  Convolutional Neural Networks
 
 使用全连接层的局限性：
 
@@ -337,7 +337,7 @@ tensor([[[[ 5.,  6.,  7.,  7.],
 - 卷积层保留输入形状。
 - 卷积层通过滑动窗口将同一卷积核与不同位置的输入重复计算，从而避免参数尺寸过大。
 
-### LeNet 模型
+## LeNet 模型
 
 LeNet分为卷积层块和全连接层块两个部分。下面我们分别介绍这两个模块。
 
@@ -350,6 +350,8 @@ LeNet分为卷积层块和全连接层块两个部分。下面我们分别介绍
 卷积层块由两个这样的基本单位重复堆叠构成。在卷积层块中，每个卷积层都使用$5 \times 5$的窗口，并在输出上使用sigmoid激活函数。第一个卷积层输出通道数为6，第二个卷积层输出通道数则增加到16。
 
 全连接层块含3个全连接层。它们的输出个数分别是120、84和10，其中10为输出的类别个数。
+
+> 在通过卷积层或池化层后，输出的高和宽可能减小，为了尽可能保留输入的特征，我们可以在减小高宽的同时增加通道数
 
 下面我们通过Sequential类来实现LeNet模型。
 
@@ -592,3 +594,225 @@ tensor([9, 2, 1, 1, 2, 1, 2, 2, 5, 7])
 tensor([9, 2, 1, 1, 6, 1, 4, 6, 5, 7])
 ```
 
+##  深度卷积神经网络（AlexNet）
+
+LeNet:  在大的真实数据集上的表现并不尽如⼈意。     
+1.神经网络计算复杂。  
+2.还没有⼤量深⼊研究参数初始化和⾮凸优化算法等诸多领域。  
+
+机器学习的特征提取:手工定义的特征提取函数  
+神经网络的特征提取：通过学习得到数据的多级表征，并逐级表⽰越来越抽象的概念或模式。  
+
+神经网络发展的限制:数据、硬件
+
+AlexNet首次证明了学习到的特征可以超越⼿⼯设计的特征，从而⼀举打破计算机视觉研究的前状。   
+**特征：**
+
+1. 8层变换，其中有5层卷积和2层全连接隐藏层，以及1个全连接输出层。
+2. 将sigmoid激活函数改成了更加简单的ReLU激活函数。
+3. 用Dropout来控制全连接层的模型复杂度。
+4. 引入数据增强，如翻转、裁剪和颜色变化，从而进一步扩大数据集来缓解过拟合。
+
+![Image Name](https://cdn.kesci.com/upload/image/q5kv4gpx88.png?imageView2/0/w/640/h/640)
+
+```python
+import time
+import torch
+from torch import nn, optim
+import torchvision
+import numpy as np
+import sys
+sys.path.append("/home/kesci/input/") 
+import d2lzh1981 as d2l
+import os
+import torch.nn.functional as F
+
+device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+
+class AlexNet(nn.Module):
+    def __init__(self):
+        super(AlexNet, self).__init__()
+        self.conv = nn.Sequential(
+            nn.Conv2d(1, 96, 11, 4), # in_channels, out_channels, kernel_size, stride, padding
+            nn.ReLU(),
+            nn.MaxPool2d(3, 2), # kernel_size, stride
+            # 减小卷积窗口，使用填充为2来使得输入与输出的高和宽一致，且增大输出通道数
+            nn.Conv2d(96, 256, 5, 1, 2),
+            nn.ReLU(),
+            nn.MaxPool2d(3, 2),
+            # 连续3个卷积层，且使用更小的卷积窗口。除了最后的卷积层外，进一步增大了输出通道数。
+            # 前两个卷积层后不使用池化层来减小输入的高和宽
+            nn.Conv2d(256, 384, 3, 1, 1),
+            nn.ReLU(),
+            nn.Conv2d(384, 384, 3, 1, 1),
+            nn.ReLU(),
+            nn.Conv2d(384, 256, 3, 1, 1),
+            nn.ReLU(),
+            nn.MaxPool2d(3, 2)
+        )
+         # 这里全连接层的输出个数比LeNet中的大数倍。使用丢弃层来缓解过拟合
+        self.fc = nn.Sequential(
+            nn.Linear(256*5*5, 4096),
+            nn.ReLU(),
+            nn.Dropout(0.5),
+            #由于使用CPU镜像，精简网络，若为GPU镜像可添加该层
+            #nn.Linear(4096, 4096),
+            #nn.ReLU(),
+            #nn.Dropout(0.5),
+
+            # 输出层。由于这里使用Fashion-MNIST，所以用类别数为10，而非论文中的1000
+            nn.Linear(4096, 10),
+        )
+
+    def forward(self, img):
+
+        feature = self.conv(img)
+        output = self.fc(feature.view(img.shape[0], -1))
+        return output
+        
+     
+net = AlexNet()
+print(net)
+```
+
+```
+AlexNet(
+  (conv): Sequential(
+    (0): Conv2d(1, 96, kernel_size=(11, 11), stride=(4, 4))
+    (1): ReLU()
+    (2): MaxPool2d(kernel_size=3, stride=2, padding=0, dilation=1, ceil_mode=False)
+    (3): Conv2d(96, 256, kernel_size=(5, 5), stride=(1, 1), padding=(2, 2))
+    (4): ReLU()
+    (5): MaxPool2d(kernel_size=3, stride=2, padding=0, dilation=1, ceil_mode=False)
+    (6): Conv2d(256, 384, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+    (7): ReLU()
+    (8): Conv2d(384, 384, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+    (9): ReLU()
+    (10): Conv2d(384, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+    (11): ReLU()
+    (12): MaxPool2d(kernel_size=3, stride=2, padding=0, dilation=1, ceil_mode=False)
+  )
+  (fc): Sequential(
+    (0): Linear(in_features=6400, out_features=4096, bias=True)
+    (1): ReLU()
+    (2): Dropout(p=0.5, inplace=False)
+    (3): Linear(in_features=4096, out_features=10, bias=True)
+  )
+)
+```
+
+```python
+# load data
+def load_data_fashion_mnist(batch_size, resize=None, root='/home/kesci/input/FashionMNIST2065'):
+    """Download the fashion mnist dataset and then load into memory."""
+    trans = []
+    if resize:
+        trans.append(torchvision.transforms.Resize(size=resize))
+    trans.append(torchvision.transforms.ToTensor())
+    
+    transform = torchvision.transforms.Compose(trans)
+    mnist_train = torchvision.datasets.FashionMNIST(root=root, train=True, download=True, transform=transform)
+    mnist_test = torchvision.datasets.FashionMNIST(root=root, train=False, download=True, transform=transform)
+
+    train_iter = torch.utils.data.DataLoader(mnist_train, batch_size=batch_size, shuffle=True, num_workers=2)
+    test_iter = torch.utils.data.DataLoader(mnist_test, batch_size=batch_size, shuffle=False, num_workers=2)
+
+    return train_iter, test_iter
+
+#batchsize=128
+batch_size = 16
+# 如出现“out of memory”的报错信息，可减小batch_size或resize
+train_iter, test_iter = load_data_fashion_mnist(batch_size,224)
+for X, Y in train_iter:
+    print('X =', X.shape,
+        '\nY =', Y.type(torch.int32))
+    break
+    
+```
+
+```
+X = torch.Size([16, 1, 224, 224]) 
+Y = tensor([5, 2, 9, 3, 1, 8, 3, 3, 2, 6, 1, 6, 2, 4, 4, 8], dtype=torch.int32)
+```
+
+```python
+lr, num_epochs = 0.001, 3
+optimizer = torch.optim.Adam(net.parameters(), lr=lr)
+d2l.train_ch5(net, train_iter, test_iter, batch_size, optimizer, device, num_epochs)
+```
+
+```
+training on  cpu
+epoch 1, loss 0.4867, train acc 0.819, test acc 0.856, time 1170.6 sec
+epoch 2, loss 0.3348, train acc 0.877, test acc 0.868, time 1186.7 sec
+epoch 3, loss 0.2962, train acc 0.890, test acc 0.887, time 1169.9 sec
+```
+
+##  使用重复元素的网络（VGG）
+
+VGG：通过重复使⽤简单的基础块来构建深度模型。  
+Block:数个相同的填充为1、窗口形状为$3\times 3$的卷积层,接上一个步幅为2、窗口形状为$2\times 2$的最大池化层。  
+卷积层保持输入的高和宽不变，而池化层则对其减半。
+
+
+![Image Name](https://cdn.kesci.com/upload/image/q5l6vut7h1.png?imageView2/0/w/640/h/640)
+
+```python
+
+```
+
+```
+
+```
+
+```python
+
+```
+
+```
+
+```
+
+```python
+
+```
+
+```
+
+```
+
+#  ⽹络中的⽹络（NiN） 
+LeNet、AlexNet和VGG：先以由卷积层构成的模块充分抽取 空间特征，再以由全连接层构成的模块来输出分类结果。  
+NiN：串联多个由卷积层和“全连接”层构成的小⽹络来构建⼀个深层⽹络。  
+⽤了输出通道数等于标签类别数的NiN块，然后使⽤全局平均池化层对每个通道中所有元素求平均并直接⽤于分类。  
+
+![Image Name](https://cdn.kesci.com/upload/image/q5l6u1p5vy.png?imageView2/0/w/960/h/960)
+
+1×1卷积核作用   
+1.放缩通道数：通过控制卷积核的数量达到通道数的放缩。  
+2.增加非线性。1×1卷积核的卷积过程相当于全连接层的计算过程，并且还加入了非线性激活函数，从而可以增加网络的非线性。  
+3.计算参数少   
+
+```
+
+```
+
+NiN重复使⽤由卷积层和代替全连接层的1×1卷积层构成的NiN块来构建深层⽹络。  
+NiN去除了容易造成过拟合的全连接输出层，而是将其替换成输出通道数等于标签类别数 的NiN块和全局平均池化层。   
+NiN的以上设计思想影响了后⾯⼀系列卷积神经⽹络的设计。  
+
+# GoogLeNet
+
+1. 由Inception基础块组成。  
+2. Inception块相当于⼀个有4条线路的⼦⽹络。它通过不同窗口形状的卷积层和最⼤池化层来并⾏抽取信息，并使⽤1×1卷积层减少通道数从而降低模型复杂度。   
+3. 可以⾃定义的超参数是每个层的输出通道数，我们以此来控制模型复杂度。 
+
+![Image Name](https://cdn.kesci.com/upload/image/q5l6uortw.png?imageView2/0/w/640/h/640)
+
+```
+
+```
+
+完整模型结构  
+
+![Image Name](https://cdn.kesci.com/upload/image/q5l6x0fyyn.png?imageView2/0/w/640/h/640)
