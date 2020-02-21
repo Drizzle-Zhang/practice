@@ -2,7 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="3a723a8b-2392-4821-9586-2b4118ff67da" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/markdowns/Task04_MT.md" beforeDir="false" afterPath="$PROJECT_DIR$/markdowns/Task04_MT.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/codes/AM.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/markdowns/Task04_AM_S2S.md" beforeDir="false" afterPath="$PROJECT_DIR$/markdowns/Task04_AM_S2S.md" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -22,25 +24,25 @@
       </usages-collector>
       <usages-collector id="statistics.file.extensions.open">
         <counts>
-          <entry key="py" value="11" />
+          <entry key="py" value="12" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.open">
         <counts>
-          <entry key="Python" value="11" />
+          <entry key="Python" value="12" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
           <entry key="Python Console" value="216" />
           <entry key="dummy" value="19" />
-          <entry key="py" value="2302" />
+          <entry key="py" value="2470" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
           <entry key="PLAIN_TEXT" value="19" />
-          <entry key="Python" value="2518" />
+          <entry key="Python" value="2686" />
         </counts>
       </usages-collector>
     </session>
@@ -51,7 +53,7 @@
         <entry file="file://$PROJECT_DIR$/codes/RNN.py">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="339">
-              <caret line="509" column="19" lean-forward="true" selection-start-line="509" selection-start-column="19" selection-end-line="509" selection-end-column="19" />
+              <caret line="509" column="19" selection-start-line="509" selection-start-column="19" selection-end-line="509" selection-end-column="19" />
               <folding>
                 <element signature="e#114#126#0" expanded="true" />
               </folding>
@@ -71,11 +73,23 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/codes/MT.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="109">
-              <caret line="285" column="27" lean-forward="true" selection-start-line="285" selection-start-column="27" selection-end-line="285" selection-end-column="27" />
+            <state relative-caret-position="23">
+              <caret line="267" column="65" selection-start-line="267" selection-start-column="65" selection-end-line="267" selection-end-column="65" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/codes/AM.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="371">
+              <caret line="215" column="29" lean-forward="true" selection-start-line="215" selection-start-column="29" selection-end-line="215" selection-end-column="29" />
+              <folding>
+                <element signature="e#112#123#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -105,6 +119,7 @@
         <option value="$PROJECT_DIR$/codes/kaggle.py" />
         <option value="$PROJECT_DIR$/codes/RNN.py" />
         <option value="$PROJECT_DIR$/codes/MT.py" />
+        <option value="$PROJECT_DIR$/codes/AM.py" />
       </list>
     </option>
   </component>
@@ -260,7 +275,7 @@
     <entry file="file://$PROJECT_DIR$/codes/RNN.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="339">
-          <caret line="509" column="19" lean-forward="true" selection-start-line="509" selection-start-column="19" selection-end-line="509" selection-end-column="19" />
+          <caret line="509" column="19" selection-start-line="509" selection-start-column="19" selection-end-line="509" selection-end-column="19" />
           <folding>
             <element signature="e#114#126#0" expanded="true" />
           </folding>
@@ -269,8 +284,18 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/codes/MT.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="109">
-          <caret line="285" column="27" lean-forward="true" selection-start-line="285" selection-start-column="27" selection-end-line="285" selection-end-column="27" />
+        <state relative-caret-position="23">
+          <caret line="267" column="65" selection-start-line="267" selection-start-column="65" selection-end-line="267" selection-end-column="65" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/codes/AM.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="371">
+          <caret line="215" column="29" lean-forward="true" selection-start-line="215" selection-start-column="29" selection-end-line="215" selection-end-column="29" />
+          <folding>
+            <element signature="e#112#123#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
